@@ -3,6 +3,7 @@
 ## 1. API概要
 
 ### 1.1 基本情報
+
 - **ベースURL**: `https://api.sales-report.example.com/v1`
 - **認証方式**: Bearer Token（JWT）
 - **データ形式**: JSON
@@ -10,32 +11,33 @@
 
 ### 1.2 エンドポイント一覧
 
-| カテゴリ | メソッド | エンドポイント | 説明 |
-|----------|----------|----------------|------|
-| 認証 | POST | /auth/login | ログイン |
-| 認証 | POST | /auth/logout | ログアウト |
-| 認証 | GET | /auth/me | ログインユーザー情報取得 |
-| 日報 | GET | /reports | 日報一覧取得 |
-| 日報 | GET | /reports/{id} | 日報詳細取得 |
-| 日報 | POST | /reports | 日報作成 |
-| 日報 | PUT | /reports/{id} | 日報更新 |
-| 日報 | DELETE | /reports/{id} | 日報削除 |
-| コメント | GET | /reports/{id}/comments | コメント一覧取得 |
-| コメント | POST | /reports/{id}/comments | コメント作成 |
-| 営業担当者 | GET | /sales-persons | 営業担当者一覧取得 |
-| 営業担当者 | GET | /sales-persons/{id} | 営業担当者詳細取得 |
-| 営業担当者 | POST | /sales-persons | 営業担当者作成 |
-| 営業担当者 | PUT | /sales-persons/{id} | 営業担当者更新 |
-| 営業担当者 | DELETE | /sales-persons/{id} | 営業担当者削除 |
-| 顧客 | GET | /customers | 顧客一覧取得 |
-| 顧客 | GET | /customers/{id} | 顧客詳細取得 |
-| 顧客 | POST | /customers | 顧客作成 |
-| 顧客 | PUT | /customers/{id} | 顧客更新 |
-| 顧客 | DELETE | /customers/{id} | 顧客削除 |
+| カテゴリ   | メソッド | エンドポイント         | 説明                     |
+| ---------- | -------- | ---------------------- | ------------------------ |
+| 認証       | POST     | /auth/login            | ログイン                 |
+| 認証       | POST     | /auth/logout           | ログアウト               |
+| 認証       | GET      | /auth/me               | ログインユーザー情報取得 |
+| 日報       | GET      | /reports               | 日報一覧取得             |
+| 日報       | GET      | /reports/{id}          | 日報詳細取得             |
+| 日報       | POST     | /reports               | 日報作成                 |
+| 日報       | PUT      | /reports/{id}          | 日報更新                 |
+| 日報       | DELETE   | /reports/{id}          | 日報削除                 |
+| コメント   | GET      | /reports/{id}/comments | コメント一覧取得         |
+| コメント   | POST     | /reports/{id}/comments | コメント作成             |
+| 営業担当者 | GET      | /sales-persons         | 営業担当者一覧取得       |
+| 営業担当者 | GET      | /sales-persons/{id}    | 営業担当者詳細取得       |
+| 営業担当者 | POST     | /sales-persons         | 営業担当者作成           |
+| 営業担当者 | PUT      | /sales-persons/{id}    | 営業担当者更新           |
+| 営業担当者 | DELETE   | /sales-persons/{id}    | 営業担当者削除           |
+| 顧客       | GET      | /customers             | 顧客一覧取得             |
+| 顧客       | GET      | /customers/{id}        | 顧客詳細取得             |
+| 顧客       | POST     | /customers             | 顧客作成                 |
+| 顧客       | PUT      | /customers/{id}        | 顧客更新                 |
+| 顧客       | DELETE   | /customers/{id}        | 顧客削除                 |
 
 ## 2. 共通仕様
 
 ### 2.1 リクエストヘッダー
+
 ```
 Authorization: Bearer {token}
 Content-Type: application/json
@@ -43,25 +45,28 @@ Accept: application/json
 ```
 
 ### 2.2 レスポンスヘッダー
+
 ```
 Content-Type: application/json; charset=utf-8
 X-Request-Id: {request-id}
 ```
 
 ### 2.3 HTTPステータスコード
-| コード | 説明 |
-|--------|------|
-| 200 | 成功 |
-| 201 | 作成成功 |
-| 204 | 削除成功 |
-| 400 | リクエストエラー |
-| 401 | 認証エラー |
-| 403 | 権限エラー |
-| 404 | リソースが見つからない |
-| 409 | 競合エラー |
-| 500 | サーバーエラー |
+
+| コード | 説明                   |
+| ------ | ---------------------- |
+| 200    | 成功                   |
+| 201    | 作成成功               |
+| 204    | 削除成功               |
+| 400    | リクエストエラー       |
+| 401    | 認証エラー             |
+| 403    | 権限エラー             |
+| 404    | リソースが見つからない |
+| 409    | 競合エラー             |
+| 500    | サーバーエラー         |
 
 ### 2.4 エラーレスポンス形式
+
 ```json
 {
   "error": {
@@ -78,6 +83,7 @@ X-Request-Id: {request-id}
 ```
 
 ### 2.5 ページネーション
+
 ```json
 {
   "data": [...],
@@ -95,9 +101,11 @@ X-Request-Id: {request-id}
 ### 3.1 認証API
 
 #### POST /auth/login
+
 ログイン認証を行い、アクセストークンを発行する
 
 **リクエスト**
+
 ```json
 {
   "email": "yamada@example.com",
@@ -106,6 +114,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIs...",
@@ -121,17 +130,21 @@ X-Request-Id: {request-id}
 ```
 
 #### POST /auth/logout
+
 ログアウト処理（トークン無効化）
 
 **レスポンス**
+
 ```
 204 No Content
 ```
 
 #### GET /auth/me
+
 現在ログインしているユーザー情報を取得
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -145,6 +158,7 @@ X-Request-Id: {request-id}
 ### 3.2 日報API
 
 #### GET /reports
+
 日報一覧を取得
 
 **クエリパラメータ**
@@ -157,6 +171,7 @@ X-Request-Id: {request-id}
 | per_page | integer | - | 1ページあたりの件数（デフォルト: 20） |
 
 **レスポンス**
+
 ```json
 {
   "data": [
@@ -182,9 +197,11 @@ X-Request-Id: {request-id}
 ```
 
 #### GET /reports/{id}
+
 日報詳細を取得
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -224,9 +241,11 @@ X-Request-Id: {request-id}
 ```
 
 #### POST /reports
+
 日報を作成
 
 **リクエスト**
+
 ```json
 {
   "report_date": "2025-07-27",
@@ -243,6 +262,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -255,9 +275,11 @@ X-Request-Id: {request-id}
 ```
 
 #### PUT /reports/{id}
+
 日報を更新
 
 **リクエスト**
+
 ```json
 {
   "problem": "新規開拓の進捗が遅れている（更新）...",
@@ -279,6 +301,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -291,9 +314,11 @@ X-Request-Id: {request-id}
 ```
 
 #### DELETE /reports/{id}
+
 日報を削除
 
 **レスポンス**
+
 ```
 204 No Content
 ```
@@ -301,9 +326,11 @@ X-Request-Id: {request-id}
 ### 3.3 コメントAPI
 
 #### GET /reports/{id}/comments
+
 日報に対するコメント一覧を取得
 
 **レスポンス**
+
 ```json
 {
   "data": [
@@ -321,9 +348,11 @@ X-Request-Id: {request-id}
 ```
 
 #### POST /reports/{id}/comments
+
 日報にコメントを追加（管理者のみ）
 
 **リクエスト**
+
 ```json
 {
   "comment": "新規開拓については明日相談しましょう。"
@@ -331,6 +360,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -344,6 +374,7 @@ X-Request-Id: {request-id}
 ### 3.4 営業担当者API
 
 #### GET /sales-persons
+
 営業担当者一覧を取得（管理者のみ）
 
 **クエリパラメータ**
@@ -353,6 +384,7 @@ X-Request-Id: {request-id}
 | is_manager | boolean | - | 管理者フラグで絞り込み |
 
 **レスポンス**
+
 ```json
 {
   "data": [
@@ -368,9 +400,11 @@ X-Request-Id: {request-id}
 ```
 
 #### GET /sales-persons/{id}
+
 営業担当者詳細を取得（管理者のみ）
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -384,9 +418,11 @@ X-Request-Id: {request-id}
 ```
 
 #### POST /sales-persons
+
 営業担当者を作成（管理者のみ）
 
 **リクエスト**
+
 ```json
 {
   "name": "山田太郎",
@@ -398,6 +434,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -410,9 +447,11 @@ X-Request-Id: {request-id}
 ```
 
 #### PUT /sales-persons/{id}
+
 営業担当者を更新（管理者のみ）
 
 **リクエスト**
+
 ```json
 {
   "name": "山田太郎",
@@ -423,6 +462,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "id": 1,
@@ -435,9 +475,11 @@ X-Request-Id: {request-id}
 ```
 
 #### DELETE /sales-persons/{id}
+
 営業担当者を削除（管理者のみ）
 
 **レスポンス**
+
 ```
 204 No Content
 ```
@@ -445,6 +487,7 @@ X-Request-Id: {request-id}
 ### 3.5 顧客API
 
 #### GET /customers
+
 顧客一覧を取得
 
 **クエリパラメータ**
@@ -455,6 +498,7 @@ X-Request-Id: {request-id}
 | per_page | integer | - | 1ページあたりの件数 |
 
 **レスポンス**
+
 ```json
 {
   "data": [
@@ -476,9 +520,11 @@ X-Request-Id: {request-id}
 ```
 
 #### GET /customers/{id}
+
 顧客詳細を取得
 
 **レスポンス**
+
 ```json
 {
   "id": 10,
@@ -493,9 +539,11 @@ X-Request-Id: {request-id}
 ```
 
 #### POST /customers
+
 顧客を作成（管理者のみ）
 
 **リクエスト**
+
 ```json
 {
   "company_name": "ABC商事",
@@ -507,6 +555,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "id": 10,
@@ -520,9 +569,11 @@ X-Request-Id: {request-id}
 ```
 
 #### PUT /customers/{id}
+
 顧客を更新（管理者のみ）
 
 **リクエスト**
+
 ```json
 {
   "company_name": "ABC商事",
@@ -534,6 +585,7 @@ X-Request-Id: {request-id}
 ```
 
 **レスポンス**
+
 ```json
 {
   "id": 10,
@@ -547,25 +599,27 @@ X-Request-Id: {request-id}
 ```
 
 #### DELETE /customers/{id}
+
 顧客を削除（管理者のみ）
 
 **レスポンス**
+
 ```
 204 No Content
 ```
 
 ## 4. エラーコード一覧
 
-| コード | 説明 |
-|--------|------|
+| コード                   | 説明                                             |
+| ------------------------ | ------------------------------------------------ |
 | AUTH_INVALID_CREDENTIALS | メールアドレスまたはパスワードが正しくありません |
-| AUTH_TOKEN_EXPIRED | トークンの有効期限が切れています |
-| AUTH_UNAUTHORIZED | 認証が必要です |
-| FORBIDDEN | この操作を行う権限がありません |
-| VALIDATION_ERROR | 入力値が不正です |
-| DUPLICATE_REPORT | 同じ日付の日報が既に存在します |
-| NOT_FOUND | リソースが見つかりません |
-| INTERNAL_ERROR | サーバーエラーが発生しました |
+| AUTH_TOKEN_EXPIRED       | トークンの有効期限が切れています                 |
+| AUTH_UNAUTHORIZED        | 認証が必要です                                   |
+| FORBIDDEN                | この操作を行う権限がありません                   |
+| VALIDATION_ERROR         | 入力値が不正です                                 |
+| DUPLICATE_REPORT         | 同じ日付の日報が既に存在します                   |
+| NOT_FOUND                | リソースが見つかりません                         |
+| INTERNAL_ERROR           | サーバーエラーが発生しました                     |
 
 ## 5. 制限事項
 

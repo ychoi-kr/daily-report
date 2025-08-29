@@ -10,7 +10,7 @@ erDiagram
         datetime created_at "作成日時"
         datetime updated_at "更新日時"
     }
-    
+
     %% 顧客マスタ
     CUSTOMER {
         int customer_id PK "顧客ID"
@@ -22,7 +22,7 @@ erDiagram
         datetime created_at "作成日時"
         datetime updated_at "更新日時"
     }
-    
+
     %% 日報
     DAILY_REPORT {
         int report_id PK "日報ID"
@@ -33,7 +33,7 @@ erDiagram
         datetime created_at "作成日時"
         datetime updated_at "更新日時"
     }
-    
+
     %% 訪問記録
     VISIT_RECORD {
         int visit_id PK "訪問ID"
@@ -43,7 +43,7 @@ erDiagram
         time visit_time "訪問時刻"
         datetime created_at "作成日時"
     }
-    
+
     %% 上長コメント
     MANAGER_COMMENT {
         int comment_id PK "コメントID"
@@ -52,7 +52,7 @@ erDiagram
         text comment "コメント内容"
         datetime created_at "作成日時"
     }
-    
+
     %% リレーションシップ
     SALES_PERSON ||--o{ DAILY_REPORT : "作成する"
     DAILY_REPORT ||--o{ VISIT_RECORD : "含む"
