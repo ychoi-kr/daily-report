@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -48,9 +48,9 @@ model Customer {
 model DailyReport {
   reportId      Int      @id @default(autoincrement()) @map("report_id")
   salesPersonId Int      @map("sales_person_id")
-  reportDate    DateTime @map("report_date") @db.Date
-  problem       String   @db.Text
-  plan          String   @db.Text
+  reportDate    DateTime @map("report_date")
+  problem       String
+  plan          String
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -70,8 +70,8 @@ model VisitRecord {
   visitId      Int       @id @default(autoincrement()) @map("visit_id")
   reportId     Int       @map("report_id")
   customerId   Int       @map("customer_id")
-  visitContent String    @map("visit_content") @db.Text
-  visitTime    DateTime? @map("visit_time") @db.Time(0)
+  visitContent String    @map("visit_content")
+  visitTime    String?   @map("visit_time")
   createdAt    DateTime  @default(now()) @map("created_at")
 
   // Relations
@@ -88,7 +88,7 @@ model ManagerComment {
   commentId Int      @id @default(autoincrement()) @map("comment_id")
   reportId  Int      @map("report_id")
   managerId Int      @map("manager_id")
-  comment   String   @db.Text
+  comment   String
   createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
