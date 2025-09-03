@@ -9,3 +9,8 @@ next-env.d.ts
 
 # git subtree work directories
 issue-*
+
+# Generated API files (keep in git for now)
+# openapi.json
+# src/types/api-generated.ts
+# src/types/api-utilities.ts
