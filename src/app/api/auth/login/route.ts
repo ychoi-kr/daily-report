@@ -1,12 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { LoginRequestSchema } from '@/lib/schemas/auth';
-import { JWTUtil, CookieUtil } from '@/lib/auth';
+import { JWTUtil, CookieUtil, PasswordUtil } from '@/lib/auth';
+import { RateLimitUtil } from '@/lib/auth/rate-limit';
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
+    // レート制限チェック
+    const rateLimitResult = RateLimitUtil.checkRateLimit(request);
+
+    if (!rateLimitResult.allowed) {
+      const response = NextResponse.json(
+        {
+          error: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            message:
+              'ログイン試行回数が上限に達しました。しばらく待ってから再度お試しください。',
+          },
+        },
+        { status: 429 }
+      );
+
+      RateLimitUtil.setRateLimitHeaders(
+        response,
+        rateLimitResult.remainingAttempts,
+        rateLimitResult.resetTime
+      );
+
+      return response;
+    }
+
     const body = await request.json();
 
     // バリデーション
@@ -20,6 +45,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
+      // 失敗時はレート制限カウンターを増やす
+      RateLimitUtil.incrementAttempts(request);
+
       return NextResponse.json(
         {
           error: {
@@ -31,9 +59,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // パスワード検証（まだハッシュ化されていない場合のため、一旦プレーンテキストで比較）
-    // TODO: 実際の実装ではハッシュ化されたパスワードと比較
-    if (validatedData.password !== 'password123') {
+    // パスワード検証
+    const isValidPassword = await PasswordUtil.verifyPassword(
+      validatedData.password,
+      user.password
+    );
+
+    if (!isValidPassword) {
+      // 失敗時はレート制限カウンターを増やす
+      RateLimitUtil.incrementAttempts(request);
+
       return NextResponse.json(
         {
           error: {
@@ -44,6 +79,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // ログイン成功時はレート制限をリセット
+    RateLimitUtil.resetRateLimit(request);
 
     // JWTトークン生成
     const userForToken = {

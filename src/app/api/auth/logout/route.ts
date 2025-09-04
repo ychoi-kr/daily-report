@@ -3,11 +3,8 @@ import { CookieUtil } from '@/lib/auth';
 
 export async function POST(_request: NextRequest) {
   try {
-    // レスポンス作成
-    const response = NextResponse.json(
-      { message: 'ログアウトしました' },
-      { status: 204 }
-    );
+    // 204 No Content レスポンスを作成（ボディなし）
+    const response = new NextResponse(null, { status: 204 });
 
     // Cookieからトークンを削除
     CookieUtil.clearTokens(response);

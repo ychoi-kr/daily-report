@@ -15,6 +15,7 @@ model SalesPerson {
   salesPersonId Int      @id @default(autoincrement()) @map("sales_person_id")
   name          String
   email         String   @unique
+  password      String   @default("") // ハッシュ化されたパスワード
   department    String
   isManager     Boolean  @default(false) @map("is_manager")
   createdAt     DateTime @default(now()) @map("created_at")

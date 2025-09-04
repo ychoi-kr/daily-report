@@ -25,7 +25,16 @@ export async function requireAuth(
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>
 ): Promise<NextResponse> {
   try {
-    const token = CookieUtil.getAccessToken(request);
+    // トークンを取得（Cookieまたは Authorization ヘッダーから）
+    let token = CookieUtil.getAccessToken(request);
+
+    // Cookieにない場合は Authorization ヘッダーをチェック
+    if (!token) {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
 
     if (!token) {
       return NextResponse.json(
@@ -117,7 +126,16 @@ export async function optionalAuth(
   handler: (req: NextRequest & { user?: JWTPayload }) => Promise<NextResponse>
 ): Promise<NextResponse> {
   try {
-    const token = CookieUtil.getAccessToken(request);
+    // トークンを取得（Cookieまたは Authorization ヘッダーから）
+    let token = CookieUtil.getAccessToken(request);
+
+    // Cookieにない場合は Authorization ヘッダーをチェック
+    if (!token) {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
 
     if (token) {
       const payload = JWTUtil.verifyAccessToken(token);
