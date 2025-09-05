@@ -7,8 +7,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
-    exclude: ['node_modules', '.next', 'issue-*/**'],
+    setupFiles: [path.resolve(__dirname, './tests/setup.ts')],
+    exclude: ['node_modules', '.next'],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
