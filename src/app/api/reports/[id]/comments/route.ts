@@ -1,134 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { requireAuth, requireManager, AuthenticatedRequest } from '@/lib/auth/middleware';
-import { CreateCommentRequestSchema } from '@/lib/schemas/report';
-import { z } from 'zod';
+import { requireAuth, requireManager } from '@/lib/auth/middleware';
+import {
+  getCommentsByReportId,
+  checkReportExists,
+  createComment,
+  disconnectDatabase,
+} from '@/lib/db/comments';
+import {
+  CreateCommentRequestSchema,
+  CommentsListResponseSchema,
+  CreateCommentResponseSchema,
+} from '@/lib/schemas/comments';
+import { ZodError } from 'zod';
 
-const prisma = new PrismaClient();
-
-// GET /api/reports/[id]/comments - コメント一覧取得
+/**
+ * GET /api/reports/{id}/comments
+ * 日報に対するコメント一覧を取得
+ * 認証: 必須（全ユーザーが閲覧可能）
+ */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return requireAuth(request, async (req: AuthenticatedRequest) => {
+  return requireAuth(request, async (req) => {
     try {
-      const reportId = parseInt(params.id, 10);
+      // パスパラメータからreportIdを取得
+      const { id } = await params;
+      const reportId = parseInt(id, 10);
 
       if (isNaN(reportId) || reportId <= 0) {
         return NextResponse.json(
           {
             error: {
-              code: 'INVALID_ID',
-              message: '無効な日報IDです',
-            },
-          },
-          { status: 400 }
-        );
-      }
-
-      // 日報の存在確認と権限チェック
-      const report = await prisma.dailyReport.findUnique({
-        where: {
-          reportId,
-        },
-        select: {
-          salesPersonId: true,
-        },
-      });
-
-      if (!report) {
-        return NextResponse.json(
-          {
-            error: {
-              code: 'NOT_FOUND',
-              message: '日報が見つかりません',
-            },
-          },
-          { status: 404 }
-        );
-      }
-
-      // 権限チェック（管理者以外は自分の日報のみ閲覧可能）
-      if (!req.user.isManager && report.salesPersonId !== req.user.id) {
-        return NextResponse.json(
-          {
-            error: {
-              code: 'FORBIDDEN',
-              message: 'このコメントを閲覧する権限がありません',
-            },
-          },
-          { status: 403 }
-        );
-      }
-
-      // コメント取得
-      const comments = await prisma.managerComment.findMany({
-        where: {
-          reportId,
-        },
-        include: {
-          manager: {
-            select: {
-              salesPersonId: true,
-              name: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-      });
-
-      // レスポンスデータの整形
-      const data = comments.map((comment) => ({
-        id: comment.commentId,
-        manager: {
-          id: comment.manager.salesPersonId,
-          name: comment.manager.name,
-        },
-        comment: comment.comment,
-        created_at: comment.createdAt.toISOString(),
-      }));
-
-      return NextResponse.json(
-        {
-          data,
-        },
-        { status: 200 }
-      );
-    } catch (error) {
-      console.error('コメント一覧取得エラー:', error);
-
-      return NextResponse.json(
-        {
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: 'サーバーエラーが発生しました',
-          },
-        },
-        { status: 500 }
-      );
-    } finally {
-      await prisma.$disconnect();
-    }
-  });
-}
-
-// POST /api/reports/[id]/comments - コメント追加（管理者のみ）
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  return requireManager(request, async (req: AuthenticatedRequest) => {
-    try {
-      const reportId = parseInt(params.id, 10);
-
-      if (isNaN(reportId) || reportId <= 0) {
-        return NextResponse.json(
-          {
-            error: {
-              code: 'INVALID_ID',
+              code: 'INVALID_REPORT_ID',
               message: '無効な日報IDです',
             },
           },
@@ -137,62 +41,54 @@ export async function POST(
       }
 
       // 日報の存在確認
-      const report = await prisma.dailyReport.findUnique({
-        where: {
-          reportId,
-        },
-      });
-
-      if (!report) {
+      const reportExists = await checkReportExists(reportId);
+      if (!reportExists) {
         return NextResponse.json(
           {
             error: {
-              code: 'NOT_FOUND',
-              message: '日報が見つかりません',
+              code: 'REPORT_NOT_FOUND',
+              message: '指定された日報が見つかりません',
             },
           },
           { status: 404 }
         );
       }
 
-      const body = await req.json();
-      
-      // バリデーション
-      const validatedData = CreateCommentRequestSchema.parse(body);
+      // コメント一覧を取得
+      const comments = await getCommentsByReportId(reportId);
 
-      // コメント作成
-      const comment = await prisma.managerComment.create({
-        data: {
-          reportId,
-          managerId: req.user.id,
-          comment: validatedData.comment,
-        },
-      });
-
-      // レスポンス
-      return NextResponse.json(
-        {
+      // レスポンス形式に変換
+      const response = CommentsListResponseSchema.parse({
+        data: comments.map((comment) => ({
           id: comment.commentId,
           report_id: comment.reportId,
           manager_id: comment.managerId,
+          manager: {
+            id: comment.manager.salesPersonId,
+            name: comment.manager.name,
+          },
           comment: comment.comment,
           created_at: comment.createdAt.toISOString(),
-        },
-        { status: 201 }
-      );
-    } catch (error) {
-      console.error('コメント追加エラー:', error);
+        })),
+      });
 
-      if (error instanceof z.ZodError) {
+      return NextResponse.json(response, { status: 200 });
+    } catch (error) {
+      console.error('GET /reports/[id]/comments エラー:', error);
+
+      if (error instanceof ZodError) {
         return NextResponse.json(
           {
             error: {
               code: 'VALIDATION_ERROR',
-              message: '入力値が不正です',
-              details: error.issues,
+              message: 'レスポンスデータの検証に失敗しました',
+              details: error.issues.map((e) => ({
+                field: e.path.join('.'),
+                message: e.message,
+              })),
             },
           },
-          { status: 400 }
+          { status: 500 }
         );
       }
 
@@ -206,7 +102,129 @@ export async function POST(
         { status: 500 }
       );
     } finally {
-      await prisma.$disconnect();
+      await disconnectDatabase();
+    }
+  });
+}
+
+/**
+ * POST /api/reports/{id}/comments
+ * 日報にコメントを追加
+ * 認証: 管理者のみ
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  return requireManager(request, async (req) => {
+    try {
+      // パスパラメータからreportIdを取得
+      const { id } = await params;
+      const reportId = parseInt(id, 10);
+
+      if (isNaN(reportId) || reportId <= 0) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'INVALID_REPORT_ID',
+              message: '無効な日報IDです',
+            },
+          },
+          { status: 400 }
+        );
+      }
+
+      // リクエストボディを取得
+      const body = await request.json();
+
+      // リクエストの検証
+      const validatedData = CreateCommentRequestSchema.parse(body);
+
+      // 日報の存在確認
+      const reportExists = await checkReportExists(reportId);
+      if (!reportExists) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'REPORT_NOT_FOUND',
+              message: '指定された日報が見つかりません',
+            },
+          },
+          { status: 404 }
+        );
+      }
+
+      // コメントを作成（管理者IDは認証情報から取得）
+      const newComment = await createComment(
+        reportId,
+        req.user.userId,
+        validatedData.comment
+      );
+
+      // レスポンス形式に変換
+      const response = CreateCommentResponseSchema.parse({
+        id: newComment.commentId,
+        report_id: newComment.reportId,
+        manager_id: newComment.managerId,
+        manager: {
+          id: newComment.manager.salesPersonId,
+          name: newComment.manager.name,
+        },
+        comment: newComment.comment,
+        created_at: newComment.createdAt.toISOString(),
+      });
+
+      // TODO: 通知機能の実装
+      // ここで日報作成者への通知を送信する処理を追加
+      // 例: メール通知、WebSocket通知、プッシュ通知など
+      // await notifyReportOwner(reportId, newComment);
+
+      return NextResponse.json(response, { status: 201 });
+    } catch (error) {
+      console.error('POST /reports/[id]/comments エラー:', error);
+
+      if (error instanceof ZodError) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: '入力値が不正です',
+              details: error.issues.map((e) => ({
+                field: e.path.join('.'),
+                message: e.message,
+              })),
+            },
+          },
+          { status: 400 }
+        );
+      }
+
+      if (error instanceof Error) {
+        // カスタムエラーメッセージの場合
+        if (error.message === '指定された日報が見つかりません') {
+          return NextResponse.json(
+            {
+              error: {
+                code: 'REPORT_NOT_FOUND',
+                message: error.message,
+              },
+            },
+            { status: 404 }
+          );
+        }
+      }
+
+      return NextResponse.json(
+        {
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: 'サーバーエラーが発生しました',
+          },
+        },
+        { status: 500 }
+      );
+    } finally {
+      await disconnectDatabase();
     }
   });
 }
