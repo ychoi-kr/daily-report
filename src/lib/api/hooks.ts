@@ -190,9 +190,77 @@ export function useCustomers() {
     [setData, setLoading, setError]
   );
 
+  const createCustomer = useCallback(
+    async (customerData: {
+      company_name: string;
+      contact_person: string;
+      phone: string;
+      email: string;
+      address?: string;
+    }) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await api.customers.create(customerData);
+        return result;
+      } catch (error) {
+        setError(error as ApiError);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
+  const updateCustomer = useCallback(
+    async (
+      id: number,
+      customerData: {
+        company_name: string;
+        contact_person: string;
+        phone: string;
+        email: string;
+        address?: string;
+      }
+    ) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await api.customers.update(id, customerData);
+        return result;
+      } catch (error) {
+        setError(error as ApiError);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
+  const deleteCustomer = useCallback(
+    async (id: number) => {
+      setLoading(true);
+      setError(null);
+      try {
+        await api.customers.delete(id);
+      } catch (error) {
+        setError(error as ApiError);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
   return {
     ...customersState,
     fetchCustomers,
+    createCustomer,
+    updateCustomer,
+    deleteCustomer,
   };
 }
 
