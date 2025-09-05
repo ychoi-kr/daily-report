@@ -1,111 +1,111 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { api, setAuthToken, clearAuthToken } from '@/lib/api/simple-client';
+import { User } from '@/lib/schemas/auth';
 
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  department: string;
-  is_manager: boolean;
-};
-
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  isLoading: boolean;
   isAuthenticated: boolean;
   isManager: boolean;
-};
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshAuth: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Check authentication on mount
-  useEffect(() => {
-    checkAuth();
+  const isAuthenticated = !!user;
+  const isManager = user?.is_manager ?? false;
+
+  const refreshAuth = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Failed to refresh auth:', error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const checkAuth = async () => {
-    try {
-      // Check if token exists in localStorage
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+  useEffect(() => {
+    refreshAuth();
+  }, [refreshAuth]);
 
-      setAuthToken(token);
-      const userData = await api.auth.getMe();
-      setUser(userData);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      clearAuthToken();
-      localStorage.removeItem('authToken');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const login = useCallback(
+    async (email: string, password: string) => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await api.auth.login({ email, password });
-      const { token, user: userData } = response;
-      
-      // Store token
-      localStorage.setItem('authToken', token);
-      setAuthToken(token);
-      
-      // Set user data
-      setUser(userData);
-      
-      // Redirect based on role
-      if (userData.is_manager) {
-        router.push('/dashboard');
-      } else {
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          if (response.status === 401) {
+            throw new Error('メールアドレスまたはパスワードが正しくありません');
+          } else if (errorData?.error?.code === 'VALIDATION_ERROR') {
+            throw new Error('入力値が不正です');
+          } else {
+            throw new Error('ログインに失敗しました');
+          }
+        }
+
+        const { user: userData } = await response.json();
+        setUser(userData);
         router.push('/reports');
+      } catch (error) {
+        throw error;
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      clearAuthToken();
-      localStorage.removeItem('authToken');
-      throw error;
-    }
-  };
+    },
+    [router]
+  );
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
+    setIsLoading(true);
     try {
-      await api.auth.logout();
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      setUser(null);
+      router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      clearAuthToken();
-      localStorage.removeItem('authToken');
-      setUser(null);
-      router.push('/login');
+      setIsLoading(false);
     }
+  }, [router]);
+
+  const value = {
+    user,
+    isLoading,
+    isAuthenticated,
+    isManager,
+    login,
+    logout,
+    refreshAuth,
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-        isAuthenticated: !!user,
-        isManager: user?.is_manager || false,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
@@ -122,23 +122,24 @@ export function withAuth<P extends object>(
   requireAdmin = false
 ) {
   return function ProtectedComponent(props: P) {
-    const { isAuthenticated, isManager, loading } = useAuth();
+    const { isAuthenticated, isManager, isLoading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-      if (!loading) {
-        if (!isAuthenticated) {
-          router.push('/login');
-        } else if (requireAdmin && !isManager) {
-          router.push('/unauthorized');
-        }
+      if (!isLoading && !isAuthenticated) {
+        router.push('/login');
+      } else if (!isLoading && requireAdmin && !isManager) {
+        router.push('/');
       }
-    }, [isAuthenticated, isManager, loading, router]);
+    }, [isAuthenticated, isManager, isLoading, router]);
 
-    if (loading) {
+    if (isLoading) {
       return (
-        <div className="flex h-screen items-center justify-center">
-          <div className="text-lg">読み込み中...</div>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+            <p className="text-gray-500">Loading...</p>
+          </div>
         </div>
       );
     }

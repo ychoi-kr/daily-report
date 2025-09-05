@@ -111,6 +111,10 @@ export const api = {
       return apiRequest(`/api/v1/reports${query ? `?${query}` : ''}`);
     },
 
+    async getById(id: number) {
+      return apiRequest(`/api/v1/reports/${id}`);
+    },
+
     async create(reportData: {
       report_date: string;
       problem: string;
@@ -124,6 +128,42 @@ export const api = {
       return apiRequest('/api/v1/reports', {
         method: 'POST',
         body: JSON.stringify(reportData),
+      });
+    },
+
+    async update(
+      id: number,
+      reportData: {
+        problem?: string;
+        plan?: string;
+        visits?: Array<{
+          id?: number;
+          customer_id: number;
+          visit_time?: string;
+          visit_content: string;
+        }>;
+      }
+    ) {
+      return apiRequest(`/api/v1/reports/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(reportData),
+      });
+    },
+
+    async delete(id: number) {
+      return apiRequest(`/api/v1/reports/${id}`, {
+        method: 'DELETE',
+      });
+    },
+
+    async getComments(id: number) {
+      return apiRequest(`/api/v1/reports/${id}/comments`);
+    },
+
+    async addComment(id: number, comment: string) {
+      return apiRequest(`/api/v1/reports/${id}/comments`, {
+        method: 'POST',
+        body: JSON.stringify({ comment }),
       });
     },
   },
@@ -184,6 +224,31 @@ export const api = {
       return apiRequest(`/api/v1/customers/${id}`, {
         method: 'DELETE',
       });
+    },
+  },
+
+  salesPersons: {
+    async getAll(params?: {
+      department?: string;
+      is_manager?: boolean;
+      page?: number;
+      per_page?: number;
+    }) {
+      const searchParams = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined) {
+            searchParams.append(key, value.toString());
+          }
+        });
+      }
+
+      const query = searchParams.toString();
+      return apiRequest(`/api/v1/sales-persons${query ? `?${query}` : ''}`);
+    },
+
+    async getById(id: number) {
+      return apiRequest(`/api/v1/sales-persons/${id}`);
     },
   },
 };
