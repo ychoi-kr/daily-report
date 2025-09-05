@@ -37,6 +37,14 @@ export const ManagerCommentSchema = z.object({
   created_at: z.string().datetime(),
 });
 
+// ページネーション情報
+export const PaginationSchema = z.object({
+  total: z.number().int().min(0),
+  page: z.number().int().positive(),
+  per_page: z.number().int().positive(),
+  total_pages: z.number().int().min(0),
+});
+
 // 日報一覧項目
 export const DailyReportListItemSchema = z.object({
   id: z.number().int().positive(),
@@ -48,6 +56,12 @@ export const DailyReportListItemSchema = z.object({
   visit_count: z.number().int().min(0),
   has_comments: z.boolean(),
   created_at: z.string().datetime(),
+});
+
+// 日報一覧レスポンス
+export const DailyReportListResponseSchema = z.object({
+  data: z.array(DailyReportListItemSchema),
+  pagination: PaginationSchema,
 });
 
 // 日報詳細
@@ -113,6 +127,22 @@ export const ReportQuerySchema = z.object({
     .refine((val) => val === undefined || val > 0, {
       message: 'sales_person_id must be a positive integer',
     }),
+  page: z
+    .string()
+    .optional()
+    .default('1')
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => val > 0, {
+      message: 'page must be a positive integer',
+    }),
+  per_page: z
+    .string()
+    .optional()
+    .default('20')
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => val > 0 && val <= 100, {
+      message: 'per_page must be between 1 and 100',
+    }),
 });
 
 // 日報作成レスポンス
@@ -155,7 +185,9 @@ export const CreateCommentResponseSchema = z.object({
 export type VisitRecord = z.infer<typeof VisitRecordSchema>;
 export type VisitRecordInput = z.infer<typeof VisitRecordInputSchema>;
 export type ManagerComment = z.infer<typeof ManagerCommentSchema>;
+export type Pagination = z.infer<typeof PaginationSchema>;
 export type DailyReportListItem = z.infer<typeof DailyReportListItemSchema>;
+export type DailyReportListResponse = z.infer<typeof DailyReportListResponseSchema>;
 export type DailyReportDetail = z.infer<typeof DailyReportDetailSchema>;
 export type CreateReportRequest = z.infer<typeof CreateReportRequestSchema>;
 export type UpdateReportRequest = z.infer<typeof UpdateReportRequestSchema>;

@@ -1,152 +1,212 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-import {
-  CreateCommentRequestSchema,
-  type CreateCommentResponse,
-  type ManagerComment,
-} from '@/lib/schemas/report';
+import { PrismaClient } from '@prisma/client';
+import { requireAuth, requireManager, AuthenticatedRequest } from '@/lib/auth/middleware';
+import { CreateCommentRequestSchema } from '@/lib/schemas/report';
 import { z } from 'zod';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-// 認証チェック
-async function verifyAuth(request: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth-token')?.value;
-
-  if (!token) {
-    return null;
-  }
-
-  try {
-    const payload = jwt.verify(token, JWT_SECRET) as any;
-    return payload;
-  } catch {
-    return null;
-  }
-}
+const prisma = new PrismaClient();
 
 // GET /api/reports/[id]/comments - コメント一覧取得
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
-  const user = await verifyAuth(request);
-  if (!user) {
-    return NextResponse.json(
-      { error: { code: 'AUTH_UNAUTHORIZED', message: '認証が必要です' } },
-      { status: 401 }
-    );
-  }
+  return requireAuth(request, async (req: AuthenticatedRequest) => {
+    try {
+      const reportId = parseInt(params.id, 10);
 
-  try {
-    const reportId = parseInt(id, 10);
-    if (isNaN(reportId) || reportId <= 0) {
-      return NextResponse.json(
-        { error: { code: 'VALIDATION_ERROR', message: '無効なIDです' } },
-        { status: 400 }
-      );
-    }
+      if (isNaN(reportId) || reportId <= 0) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'INVALID_ID',
+              message: '無効な日報IDです',
+            },
+          },
+          { status: 400 }
+        );
+      }
 
-    // ダミーデータを返す（実際にはデータベースから取得）
-    const dummyComments: ManagerComment[] = [
-      {
-        id: 1,
+      // 日報の存在確認と権限チェック
+      const report = await prisma.dailyReport.findUnique({
+        where: {
+          reportId,
+        },
+        select: {
+          salesPersonId: true,
+        },
+      });
+
+      if (!report) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'NOT_FOUND',
+              message: '日報が見つかりません',
+            },
+          },
+          { status: 404 }
+        );
+      }
+
+      // 権限チェック（管理者以外は自分の日報のみ閲覧可能）
+      if (!req.user.isManager && report.salesPersonId !== req.user.id) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'FORBIDDEN',
+              message: 'このコメントを閲覧する権限がありません',
+            },
+          },
+          { status: 403 }
+        );
+      }
+
+      // コメント取得
+      const comments = await prisma.managerComment.findMany({
+        where: {
+          reportId,
+        },
+        include: {
+          manager: {
+            select: {
+              salesPersonId: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      // レスポンスデータの整形
+      const data = comments.map((comment) => ({
+        id: comment.commentId,
         manager: {
-          id: 2,
-          name: '田中部長',
+          id: comment.manager.salesPersonId,
+          name: comment.manager.name,
         },
-        comment: '新規開拓については明日相談しましょう。',
-        created_at: '2025-09-04T18:00:00Z',
-      },
-    ];
+        comment: comment.comment,
+        created_at: comment.createdAt.toISOString(),
+      }));
 
-    return NextResponse.json({ data: dummyComments });
-  } catch (error) {
-    console.error('Comments fetch error:', error);
-    return NextResponse.json(
-      {
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'サーバーエラーが発生しました',
-        },
-      },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/reports/[id]/comments - コメント作成（管理者のみ）
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const user = await verifyAuth(request);
-  if (!user) {
-    return NextResponse.json(
-      { error: { code: 'AUTH_UNAUTHORIZED', message: '認証が必要です' } },
-      { status: 401 }
-    );
-  }
-
-  // 管理者権限チェック
-  if (!user.is_manager) {
-    return NextResponse.json(
-      { error: { code: 'FORBIDDEN', message: 'この操作を行う権限がありません' } },
-      { status: 403 }
-    );
-  }
-
-  try {
-    const reportId = parseInt(id, 10);
-    if (isNaN(reportId) || reportId <= 0) {
       return NextResponse.json(
-        { error: { code: 'VALIDATION_ERROR', message: '無効なIDです' } },
-        { status: 400 }
+        {
+          data,
+        },
+        { status: 200 }
       );
-    }
+    } catch (error) {
+      console.error('コメント一覧取得エラー:', error);
 
-    const body = await request.json();
-
-    // リクエストのバリデーション
-    const validatedData = CreateCommentRequestSchema.parse(body);
-
-    // コメントを作成（実際にはデータベースに保存）
-    const newComment: CreateCommentResponse = {
-      id: Math.floor(Math.random() * 1000) + 1,
-      report_id: reportId,
-      manager_id: user.id,
-      comment: validatedData.comment,
-      created_at: new Date().toISOString(),
-    };
-
-    return NextResponse.json(newComment, { status: 201 });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
           error: {
-            code: 'VALIDATION_ERROR',
-            message: '入力値が不正です',
-            details: error.issues,
+            code: 'INTERNAL_ERROR',
+            message: 'サーバーエラーが発生しました',
           },
         },
-        { status: 400 }
+        { status: 500 }
       );
+    } finally {
+      await prisma.$disconnect();
     }
+  });
+}
 
-    console.error('Comment creation error:', error);
-    return NextResponse.json(
-      {
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'サーバーエラーが発生しました',
+// POST /api/reports/[id]/comments - コメント追加（管理者のみ）
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  return requireManager(request, async (req: AuthenticatedRequest) => {
+    try {
+      const reportId = parseInt(params.id, 10);
+
+      if (isNaN(reportId) || reportId <= 0) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'INVALID_ID',
+              message: '無効な日報IDです',
+            },
+          },
+          { status: 400 }
+        );
+      }
+
+      // 日報の存在確認
+      const report = await prisma.dailyReport.findUnique({
+        where: {
+          reportId,
         },
-      },
-      { status: 500 }
-    );
-  }
+      });
+
+      if (!report) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'NOT_FOUND',
+              message: '日報が見つかりません',
+            },
+          },
+          { status: 404 }
+        );
+      }
+
+      const body = await req.json();
+      
+      // バリデーション
+      const validatedData = CreateCommentRequestSchema.parse(body);
+
+      // コメント作成
+      const comment = await prisma.managerComment.create({
+        data: {
+          reportId,
+          managerId: req.user.id,
+          comment: validatedData.comment,
+        },
+      });
+
+      // レスポンス
+      return NextResponse.json(
+        {
+          id: comment.commentId,
+          report_id: comment.reportId,
+          manager_id: comment.managerId,
+          comment: comment.comment,
+          created_at: comment.createdAt.toISOString(),
+        },
+        { status: 201 }
+      );
+    } catch (error) {
+      console.error('コメント追加エラー:', error);
+
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: '入力値が不正です',
+              details: error.issues,
+            },
+          },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: 'サーバーエラーが発生しました',
+          },
+        },
+        { status: 500 }
+      );
+    } finally {
+      await prisma.$disconnect();
+    }
+  });
 }
