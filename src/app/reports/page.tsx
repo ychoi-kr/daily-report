@@ -194,4 +194,4 @@ export default function ReportsPage() {
       </div>
     </DashboardLayout>
   );
-};
+}
