@@ -187,6 +187,10 @@ export const api = {
       return apiRequest(`/api/v1/customers${query ? `?${query}` : ''}`);
     },
 
+    async getById(id: number) {
+      return apiRequest(`/api/v1/customers/${id}`);
+    },
+
     async create(customerData: {
       company_name: string;
       contact_person: string;
@@ -197,6 +201,28 @@ export const api = {
       return apiRequest('/api/v1/customers', {
         method: 'POST',
         body: JSON.stringify(customerData),
+      });
+    },
+
+    async update(
+      id: number,
+      customerData: {
+        company_name: string;
+        contact_person: string;
+        phone: string;
+        email: string;
+        address?: string;
+      }
+    ) {
+      return apiRequest(`/api/v1/customers/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(customerData),
+      });
+    },
+
+    async delete(id: number) {
+      return apiRequest(`/api/v1/customers/${id}`, {
+        method: 'DELETE',
       });
     },
   },

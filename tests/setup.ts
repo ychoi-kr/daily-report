@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 // Next.js環境変数のモック
 process.env.JWT_SECRET = 'test-secret-key-for-testing-only';
 process.env.NODE_ENV = 'test';
+process.env.NEXT_PUBLIC_API_BASE_URL = 'http://localhost:3000';
 
 // モックセットアップ
 global.ResizeObserver = class ResizeObserver {

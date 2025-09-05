@@ -115,3 +115,39 @@ export function useAuth() {
   }
   return context;
 }
+
+// Higher-order component for protecting routes
+export function withAuth<P extends object>(
+  Component: React.ComponentType<P>,
+  requireAdmin = false
+) {
+  return function ProtectedComponent(props: P) {
+    const { isAuthenticated, isManager, isLoading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+      if (!isLoading && !isAuthenticated) {
+        router.push('/login');
+      } else if (!isLoading && requireAdmin && !isManager) {
+        router.push('/');
+      }
+    }, [isAuthenticated, isManager, isLoading, router]);
+
+    if (isLoading) {
+      return (
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+            <p className="text-gray-500">Loading...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!isAuthenticated || (requireAdmin && !isManager)) {
+      return null;
+    }
+
+    return <Component {...props} />;
+  };
+}
