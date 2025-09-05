@@ -1,179 +1,197 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { ReportListTable } from '@/components/reports/ReportListTable';
+import { ReportSearchForm } from '@/components/reports/ReportSearchForm';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { api, ApiError } from '@/lib/api/simple-client';
-import { ReportSummary, PaginatedResponse } from '@/types/api';
-import { 
-  Plus, 
-  Calendar,
-  User,
-  Building2,
-  MessageSquare,
-  ChevronRight,
-  AlertCircle
-} from 'lucide-react';
+import { Pagination } from '@/components/ui/pagination';
+import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/lib/api/simple-client';
+import { DailyReportListItem } from '@/lib/schemas/report';
+import { SalesPerson } from '@/lib/schemas/sales-person';
+import { Plus } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
-function ReportsListContent() {
-  const router = useRouter();
+interface PaginationInfo {
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+}
+
+export default function ReportsPage() {
   const { user, isManager, logout } = useAuth();
-  const [reports, setReports] = useState<ReportSummary[]>([]);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  // State management
+  const [reports, setReports] = useState<DailyReportListItem[]>([]);
+  const [salesPersons, setSalesPersons] = useState<SalesPerson[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    total: 0,
+    page: 1,
+    per_page: 20,
+    total_pages: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Search parameters
+  const [searchParams, setSearchParams] = useState<{
+    startDate?: string;
+    endDate?: string;
+    salesPersonId?: number;
+  }>({});
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  const fetchReports = async () => {
+  // Fetch sales persons for the filter (managers only)
+  const fetchSalesPersons = useCallback(async () => {
+    if (!isManager) return;
+    
     try {
-      setIsLoading(true);
-      setError(null);
-      const response: PaginatedResponse<ReportSummary> = await api.reports.getAll({
-        page: 1,
-        per_page: 20
+      const response = await api.salesPersons.getAll();
+      setSalesPersons(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch sales persons:', error);
+      toast({
+        title: 'エラー',
+        description: '営業担当者の一覧取得に失敗しました',
+        variant: 'destructive',
       });
-      setReports(response.data || []);
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else {
-        setError('日報の取得に失敗しました');
-      }
+    }
+  }, [isManager, toast]);
+
+  // Fetch reports
+  const fetchReports = useCallback(async (page = 1) => {
+    setIsLoading(true);
+    try {
+      const params = {
+        ...searchParams,
+        page,
+        per_page: 20,
+      };
+      
+      const response = await api.reports.getAll(params);
+      
+      // Sort reports based on sortOrder
+      const sortedReports = [...(response.data || [])].sort((a, b) => {
+        const dateA = new Date(a.report_date).getTime();
+        const dateB = new Date(b.report_date).getTime();
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+      
+      setReports(sortedReports);
+      setPagination(response.pagination || {
+        total: 0,
+        page: 1,
+        per_page: 20,
+        total_pages: 0,
+      });
+    } catch (error) {
+      console.error('Failed to fetch reports:', error);
+      toast({
+        title: 'エラー',
+        description: '日報の取得に失敗しました',
+        variant: 'destructive',
+      });
+      setReports([]);
     } finally {
       setIsLoading(false);
     }
+  }, [searchParams, sortOrder, toast]);
+
+  // Initial data load
+  useEffect(() => {
+    if (user) {
+      fetchReports(1);
+      fetchSalesPersons();
+    }
+  }, [user, fetchReports, fetchSalesPersons]);
+
+  // Handle search
+  const handleSearch = (params: {
+    startDate?: string;
+    endDate?: string;
+    salesPersonId?: number;
+  }) => {
+    setSearchParams(params);
+    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
+  // Handle pagination
+  const handlePageChange = (page: number) => {
+    fetchReports(page);
   };
 
-  const handleReportClick = (reportId: number) => {
-    router.push(`/reports/${reportId}`);
+  // Handle sort
+  const handleSortChange = (newOrder: 'asc' | 'desc') => {
+    setSortOrder(newOrder);
   };
 
-  const handleCreateReport = () => {
+  // Handle new report creation
+  const handleNewReport = () => {
     router.push('/reports/new');
   };
+
+  // Effect to refetch when search params or sort order changes
+  useEffect(() => {
+    if (user) {
+      fetchReports(pagination.page);
+    }
+  }, [searchParams, sortOrder]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <DashboardLayout
       isManager={isManager}
-      userName={user?.name || ''}
-      onLogout={handleLogout}
+      userName={user.name}
+      onLogout={logout}
     >
-      <div className="container max-w-6xl mx-auto py-6 px-4">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">日報一覧</h1>
-            <Button onClick={handleCreateReport}>
-              <Plus className="mr-2 h-4 w-4" />
-              新規日報作成
-            </Button>
-          </div>
-
-          {/* Error State */}
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {/* Loading State */}
-          {isLoading && (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <Card key={i}>
-                  <CardContent className="p-6">
-                    <div className="animate-pulse space-y-3">
-                      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {/* Reports List */}
-          {!isLoading && reports.length === 0 && (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground mb-4">日報がまだありません</p>
-                <Button onClick={handleCreateReport}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  最初の日報を作成
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
-          {!isLoading && reports.length > 0 && (
-            <div className="space-y-3">
-              {reports.map((report) => (
-                <Card 
-                  key={report.id}
-                  className="cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => handleReportClick(report.id)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2 flex-1">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center text-sm">
-                            <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
-                            <span className="font-semibold">
-                              {format(new Date(report.report_date), 'yyyy年MM月dd日(E)', {
-                                locale: ja,
-                              })}
-                            </span>
-                          </div>
-                          <div className="flex items-center text-sm">
-                            <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                            <span>{report.sales_person.name}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center">
-                            <Building2 className="mr-1 h-3 w-3" />
-                            <span>訪問: {report.visit_count}件</span>
-                          </div>
-                          {report.has_comments && (
-                            <div className="flex items-center text-primary">
-                              <MessageSquare className="mr-1 h-3 w-3" />
-                              <span>コメントあり</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+      <div className="space-y-6">
+        {/* Header with New Report button */}
+        <div className="flex items-center justify-between">
+          <PageHeader title="日報一覧" />
+          <Button onClick={handleNewReport} className="gap-2">
+            <Plus className="h-4 w-4" />
+            新規日報作成
+          </Button>
         </div>
+
+        {/* Search Form */}
+        <ReportSearchForm
+          onSearch={handleSearch}
+          isManager={isManager}
+          salesPersons={salesPersons}
+          isLoading={isLoading}
+        />
+
+        {/* Reports Table */}
+        <ReportListTable
+          reports={reports}
+          currentUserId={user.id}
+          isManager={isManager}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
+          isLoading={isLoading}
+        />
+
+        {/* Pagination */}
+        {!isLoading && reports.length > 0 && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.total_pages}
+            perPage={pagination.per_page}
+            total={pagination.total}
+            onPageChange={handlePageChange}
+            className="mt-4"
+          />
+        )}
       </div>
     </DashboardLayout>
-  );
-}
-
-export default function ReportsListPage() {
-  return (
-    <AuthProvider>
-      <ReportsListContent />
-    </AuthProvider>
   );
 }

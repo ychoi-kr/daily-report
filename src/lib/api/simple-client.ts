@@ -200,4 +200,29 @@ export const api = {
       });
     },
   },
+
+  salesPersons: {
+    async getAll(params?: {
+      department?: string;
+      is_manager?: boolean;
+      page?: number;
+      per_page?: number;
+    }) {
+      const searchParams = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined) {
+            searchParams.append(key, value.toString());
+          }
+        });
+      }
+
+      const query = searchParams.toString();
+      return apiRequest(`/api/v1/sales-persons${query ? `?${query}` : ''}`);
+    },
+
+    async getById(id: number) {
+      return apiRequest(`/api/v1/sales-persons/${id}`);
+    },
+  },
 };
