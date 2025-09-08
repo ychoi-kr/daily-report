@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import {
   Table,
@@ -31,6 +32,7 @@ import {
   UserX,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { NewSalesPersonDialog } from '@/components/sales-persons/new-sales-person-dialog';
 import { EditSalesPersonDialog } from '@/components/sales-persons/edit-sales-person-dialog';
 import { PasswordResetDialog } from '@/components/sales-persons/password-reset-dialog';
@@ -45,6 +47,22 @@ export default function SalesPersonsPage() {
   const [resetPasswordPerson, setResetPasswordPerson] =
     useState<SalesPerson | null>(null);
   const { toast } = useToast();
+  const { user, isManager, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+
+  // 権限チェック: 管理者でない場合はリダイレクト
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    } else if (!isManager) {
+      toast({
+        title: 'アクセス拒否',
+        description: 'この機能へのアクセス権限がありません',
+        variant: 'destructive',
+      });
+      router.push('/reports');
+    }
+  }, [isAuthenticated, isManager, router, toast]);
 
   // 営業担当者一覧を取得
   const fetchSalesPersons = async () => {
@@ -126,20 +144,16 @@ export default function SalesPersonsPage() {
     }
   };
 
-  // TODO: 実際の認証状態とユーザー情報を取得
-  const isManager = true; // 管理者のみアクセス可能
-  const userName = '管理者';
-
-  const handleLogout = () => {
-    // TODO: ログアウト処理
-    console.log('Logout clicked');
-  };
+  // 管理者でない場合は何も表示しない
+  if (!isManager) {
+    return null;
+  }
 
   return (
     <DashboardLayout
       isManager={isManager}
-      userName={userName}
-      onLogout={handleLogout}
+      userName={user?.name || ''}
+      onLogout={logout}
     >
       <div className="space-y-6">
         <div className="mb-8">

@@ -7,7 +7,7 @@ async function main() {
   console.log('Start seeding...');
 
   // パスワードをハッシュ化
-  const hashedPassword = await bcrypt.hash('password123', 12);
+  const hashedPassword = await bcrypt.hash('Password123', 12);
 
   // 営業担当者を作成
   const salesPerson1 = await prisma.salesPerson.create({
@@ -17,6 +17,7 @@ async function main() {
       password: hashedPassword,
       department: '営業1課',
       isManager: false,
+      isActive: true,
     },
   });
 
@@ -27,6 +28,7 @@ async function main() {
       password: hashedPassword,
       department: '営業1課',
       isManager: false,
+      isActive: true,
     },
   });
 
@@ -37,6 +39,7 @@ async function main() {
       password: hashedPassword,
       department: '営業1課',
       isManager: true,
+      isActive: true,
     },
   });
 
