@@ -1,15 +1,20 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Start seeding...');
 
+  // パスワードをハッシュ化
+  const hashedPassword = await bcrypt.hash('password123', 12);
+
   // 営業担当者を作成
   const salesPerson1 = await prisma.salesPerson.create({
     data: {
       name: '山田太郎',
       email: 'yamada@example.com',
+      password: hashedPassword,
       department: '営業1課',
       isManager: false,
     },
@@ -19,6 +24,7 @@ async function main() {
     data: {
       name: '鈴木花子',
       email: 'suzuki@example.com',
+      password: hashedPassword,
       department: '営業1課',
       isManager: false,
     },
@@ -28,6 +34,7 @@ async function main() {
     data: {
       name: '田中部長',
       email: 'tanaka@example.com',
+      password: hashedPassword,
       department: '営業1課',
       isManager: true,
     },

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import { updateSalesPersonSchema } from '@/lib/validations/sales-person';
 import type { ApiError, SalesPerson } from '@/types/api';
+import { verifyToken } from '@/lib/auth/verify';
 
 const prisma = new PrismaClient();
 
@@ -14,6 +16,18 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // 認証チェック
+    const user = await verifyToken(request);
+    if (!user) {
+      const apiError: ApiError = {
+        error: {
+          code: 'AUTH_UNAUTHORIZED',
+          message: '認証が必要です',
+        },
+      };
+      return NextResponse.json(apiError, { status: 401 });
+    }
+
     const id = parseInt(params.id);
 
     if (isNaN(id)) {
@@ -86,6 +100,29 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    // 認証チェック
+    const user = await verifyToken(request);
+    if (!user) {
+      const apiError: ApiError = {
+        error: {
+          code: 'AUTH_UNAUTHORIZED',
+          message: '認証が必要です',
+        },
+      };
+      return NextResponse.json(apiError, { status: 401 });
+    }
+
+    // 管理者権限チェック
+    if (!user.is_manager) {
+      const apiError: ApiError = {
+        error: {
+          code: 'FORBIDDEN',
+          message: 'この操作を行う権限がありません',
+        },
+      };
+      return NextResponse.json(apiError, { status: 403 });
+    }
+
     const id = parseInt(params.id);
 
     if (isNaN(id)) {
@@ -155,6 +192,10 @@ export async function PUT(
       updateData.isManager = validatedData.is_manager;
     if (validatedData.is_active !== undefined)
       updateData.isActive = validatedData.is_active;
+    // パスワードが指定されている場合はハッシュ化
+    if (validatedData.password !== undefined) {
+      updateData.password = await bcrypt.hash(validatedData.password, 12);
+    }
 
     // 営業担当者の更新
     const updatedSalesPerson = await prisma.salesPerson.update({
@@ -222,6 +263,29 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // 認証チェック
+    const user = await verifyToken(request);
+    if (!user) {
+      const apiError: ApiError = {
+        error: {
+          code: 'AUTH_UNAUTHORIZED',
+          message: '認証が必要です',
+        },
+      };
+      return NextResponse.json(apiError, { status: 401 });
+    }
+
+    // 管理者権限チェック
+    if (!user.is_manager) {
+      const apiError: ApiError = {
+        error: {
+          code: 'FORBIDDEN',
+          message: 'この操作を行う権限がありません',
+        },
+      };
+      return NextResponse.json(apiError, { status: 403 });
+    }
+
     const id = parseInt(params.id);
 
     if (isNaN(id)) {

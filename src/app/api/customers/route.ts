@@ -1,238 +1,200 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-import {
-  CustomerQuerySchema,
-  CreateCustomerRequestSchema,
-  type Customer,
-  type CreateCustomerResponse,
-} from '@/lib/schemas/customer';
 import { z } from 'zod';
+import { PrismaClient } from '@prisma/client';
+import {
+  createCustomerSchema,
+  searchCustomerSchema,
+} from '@/lib/validations/customer';
+import type { ApiError, PaginatedResponse, Customer } from '@/types/api';
+import { verifyToken } from '@/lib/auth/verify';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const prisma = new PrismaClient();
 
-// 認証チェック
-async function verifyAuth(request: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth-token')?.value;
-
-  if (!token) {
-    return null;
-  }
-
-  try {
-    const payload = jwt.verify(token, JWT_SECRET) as any;
-    return payload;
-  } catch {
-    return null;
-  }
-}
-
-// GET /api/customers - 顧客一覧取得
+/**
+ * 顧客一覧取得
+ */
 export async function GET(request: NextRequest) {
-  const user = await verifyAuth(request);
-  if (!user) {
-    return NextResponse.json(
-      { error: { code: 'AUTH_UNAUTHORIZED', message: '認証が必要です' } },
-      { status: 401 }
-    );
-  }
-
   try {
-    const { searchParams } = new URL(request.url);
-    const queryParams = {
-      search: searchParams.get('search') || undefined,
-    };
-
-    // バリデーション
-    const validatedQuery = CustomerQuerySchema.parse(queryParams);
-
-    // ダミーデータを返す（実際にはデータベースから取得）
-    let dummyCustomers: Customer[] = [
-      {
-        id: 1,
-        company_name: 'ABC商事',
-        contact_person: '佐藤一郎',
-        phone: '03-1234-5678',
-        email: 'sato@abc.co.jp',
-      },
-      {
-        id: 2,
-        company_name: 'XYZ工業',
-        contact_person: '鈴木二郎',
-        phone: '06-2345-6789',
-        email: 'suzuki@xyz.co.jp',
-      },
-      {
-        id: 3,
-        company_name: 'テック株式会社',
-        contact_person: '田中三郎',
-        phone: '045-3456-7890',
-        email: 'tanaka@tech.co.jp',
-      },
-      {
-        id: 4,
-        company_name: 'グローバル商事',
-        contact_person: '山田四郎',
-        phone: '052-4567-8901',
-        email: 'yamada@global.co.jp',
-      },
-      {
-        id: 5,
-        company_name: 'イノベーション工業',
-        contact_person: '伊藤五郎',
-        phone: '075-5678-9012',
-        email: 'ito@innovation.co.jp',
-      },
-      {
-        id: 6,
-        company_name: 'フューチャーテック',
-        contact_person: '高橋六郎',
-        phone: '092-6789-0123',
-        email: 'takahashi@future.co.jp',
-      },
-      {
-        id: 7,
-        company_name: 'ネクスト商社',
-        contact_person: '渡辺七郎',
-        phone: '011-7890-1234',
-        email: 'watanabe@next.co.jp',
-      },
-      {
-        id: 8,
-        company_name: 'デジタルソリューション',
-        contact_person: '小林八郎',
-        phone: '082-8901-2345',
-        email: 'kobayashi@digital.co.jp',
-      },
-      {
-        id: 9,
-        company_name: 'エンタープライズ株式会社',
-        contact_person: '加藤九郎',
-        phone: '022-9012-3456',
-        email: 'kato@enterprise.co.jp',
-      },
-      {
-        id: 10,
-        company_name: 'クラウドシステム',
-        contact_person: '吉田十郎',
-        phone: '025-0123-4567',
-        email: 'yoshida@cloud.co.jp',
-      },
-    ];
-
-    // 検索フィルタリング
-    if (validatedQuery.search) {
-      const searchLower = validatedQuery.search.toLowerCase();
-      dummyCustomers = dummyCustomers.filter(
-        (customer) =>
-          customer.company_name.toLowerCase().includes(searchLower) ||
-          customer.contact_person.toLowerCase().includes(searchLower)
-      );
+    // 認証チェック
+    const user = await verifyToken(request);
+    if (!user) {
+      const apiError: ApiError = {
+        error: {
+          code: 'AUTH_UNAUTHORIZED',
+          message: '認証が必要です',
+        },
+      };
+      return NextResponse.json(apiError, { status: 401 });
     }
 
-    // ページネーション情報を含めて返す
-    const page = parseInt(searchParams.get('page') || '1');
-    const perPage = parseInt(searchParams.get('per_page') || '20');
-    const startIndex = (page - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    const paginatedData = dummyCustomers.slice(startIndex, endIndex);
+    const { searchParams } = new URL(request.url);
 
-    return NextResponse.json({
-      data: paginatedData,
-      pagination: {
-        total: dummyCustomers.length,
-        page,
-        per_page: perPage,
-        total_pages: Math.ceil(dummyCustomers.length / perPage),
+    // クエリパラメータのバリデーション
+    const validatedParams = searchCustomerSchema.parse({
+      search: searchParams.get('search') || undefined,
+      page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
+      per_page: searchParams.get('per_page')
+        ? parseInt(searchParams.get('per_page')!)
+        : 20,
+    });
+
+    // 検索条件の構築
+    const where: any = {};
+
+    if (validatedParams.search) {
+      where.OR = [
+        { companyName: { contains: validatedParams.search, mode: 'insensitive' } },
+        { contactPerson: { contains: validatedParams.search, mode: 'insensitive' } },
+      ];
+    }
+
+    // 総件数取得
+    const total = await prisma.customer.count({ where });
+
+    // ページネーション計算
+    const offset = (validatedParams.page - 1) * validatedParams.per_page;
+    const totalPages = Math.ceil(total / validatedParams.per_page);
+
+    // データ取得
+    const customers = await prisma.customer.findMany({
+      where,
+      skip: offset,
+      take: validatedParams.per_page,
+      orderBy: {
+        createdAt: 'desc',
       },
     });
+
+    // APIレスポンス形式に変換
+    const transformedData = customers.map((customer) => ({
+      id: customer.customerId,
+      company_name: customer.companyName,
+      contact_person: customer.contactPerson,
+      phone: customer.phone,
+      email: customer.email,
+    }));
+
+    const response: PaginatedResponse<Customer> = {
+      data: transformedData as Customer[],
+      pagination: {
+        total,
+        page: validatedParams.page,
+        per_page: validatedParams.per_page,
+        total_pages: totalPages,
+      },
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
+    console.error('Error fetching customers:', error);
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: '入力値が不正です',
-            details: error.issues,
-          },
+      const apiError: ApiError = {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid query parameters',
+          details: error.issues.map((e) => ({
+            field: e.path.join('.'),
+            message: e.message,
+          })),
         },
-        { status: 400 }
-      );
+      };
+      return NextResponse.json(apiError, { status: 400 });
     }
 
-    console.error('Customer fetch error:', error);
-    return NextResponse.json(
-      {
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'サーバーエラーが発生しました',
-        },
+    const apiError: ApiError = {
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Internal server error',
       },
-      { status: 500 }
-    );
+    };
+    return NextResponse.json(apiError, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-// POST /api/customers - 顧客作成（管理者のみ）
+/**
+ * 顧客作成（管理者のみ）
+ */
 export async function POST(request: NextRequest) {
-  const user = await verifyAuth(request);
-  if (!user) {
-    return NextResponse.json(
-      { error: { code: 'AUTH_UNAUTHORIZED', message: '認証が必要です' } },
-      { status: 401 }
-    );
-  }
-
-  // 管理者権限チェック
-  if (!user.is_manager) {
-    return NextResponse.json(
-      { error: { code: 'FORBIDDEN', message: 'この操作を行う権限がありません' } },
-      { status: 403 }
-    );
-  }
-
   try {
-    const body = await request.json();
-
-    // リクエストのバリデーション
-    const validatedData = CreateCustomerRequestSchema.parse(body);
-
-    // 顧客を作成（実際にはデータベースに保存）
-    const newCustomer: CreateCustomerResponse = {
-      id: Math.floor(Math.random() * 1000) + 100,
-      company_name: validatedData.company_name,
-      contact_person: validatedData.contact_person,
-      phone: validatedData.phone,
-      email: validatedData.email,
-      address: validatedData.address || '',
-      created_at: new Date().toISOString(),
-    };
-
-    return NextResponse.json(newCustomer, { status: 201 });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: '入力値が不正です',
-            details: error.issues,
-          },
+    // 認証チェック
+    const user = await verifyToken(request);
+    if (!user) {
+      const apiError: ApiError = {
+        error: {
+          code: 'AUTH_UNAUTHORIZED',
+          message: '認証が必要です',
         },
-        { status: 400 }
-      );
+      };
+      return NextResponse.json(apiError, { status: 401 });
     }
 
-    console.error('Customer creation error:', error);
-    return NextResponse.json(
-      {
+    // 管理者権限チェック
+    if (!user.is_manager) {
+      const apiError: ApiError = {
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'サーバーエラーが発生しました',
+          code: 'FORBIDDEN',
+          message: 'この操作を行う権限がありません',
         },
+      };
+      return NextResponse.json(apiError, { status: 403 });
+    }
+
+    const body = await request.json();
+
+    // リクエストボディのバリデーション
+    const validatedData = createCustomerSchema.parse(body);
+
+    // 顧客の作成
+    const customer = await prisma.customer.create({
+      data: {
+        companyName: validatedData.company_name,
+        contactPerson: validatedData.contact_person,
+        phone: validatedData.phone,
+        email: validatedData.email,
+        address: validatedData.address || '',
       },
-      { status: 500 }
-    );
+    });
+
+    // APIレスポンス形式に変換
+    const transformedResponse = {
+      id: customer.customerId,
+      company_name: customer.companyName,
+      contact_person: customer.contactPerson,
+      phone: customer.phone,
+      email: customer.email,
+      address: customer.address,
+      created_at: customer.createdAt.toISOString(),
+    };
+
+    return NextResponse.json(transformedResponse, { status: 201 });
+  } catch (error) {
+    console.error('Error creating customer:', error);
+
+    if (error instanceof z.ZodError) {
+      const apiError: ApiError = {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid request data',
+          details: error.issues.map((e) => ({
+            field: e.path.join('.'),
+            message: e.message,
+          })),
+        },
+      };
+      return NextResponse.json(apiError, { status: 400 });
+    }
+
+    const apiError: ApiError = {
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Internal server error',
+      },
+    };
+    return NextResponse.json(apiError, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }

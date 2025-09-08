@@ -7,6 +7,7 @@ import {
   searchSalesPersonSchema,
 } from '@/lib/validations/sales-person';
 import type { ApiError, PaginatedResponse, SalesPerson } from '@/types/api';
+import { verifyToken } from '@/lib/auth/verify';
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,18 @@ const prisma = new PrismaClient();
  */
 export async function GET(request: NextRequest) {
   try {
+    // 認証チェック
+    const user = await verifyToken(request);
+    if (!user) {
+      const apiError: ApiError = {
+        error: {
+          code: 'AUTH_UNAUTHORIZED',
+          message: '認証が必要です',
+        },
+      };
+      return NextResponse.json(apiError, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
 
     // クエリパラメータのバリデーション
@@ -145,6 +158,29 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    // 認証チェック
+    const user = await verifyToken(request);
+    if (!user) {
+      const apiError: ApiError = {
+        error: {
+          code: 'AUTH_UNAUTHORIZED',
+          message: '認証が必要です',
+        },
+      };
+      return NextResponse.json(apiError, { status: 401 });
+    }
+
+    // 管理者権限チェック
+    if (!user.is_manager) {
+      const apiError: ApiError = {
+        error: {
+          code: 'FORBIDDEN',
+          message: 'この操作を行う権限がありません',
+        },
+      };
+      return NextResponse.json(apiError, { status: 403 });
+    }
+
     const body = await request.json();
 
     // リクエストボディのバリデーション
