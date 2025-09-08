@@ -196,7 +196,7 @@ export function EditSalesPersonDialog({
               name="department"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>部署 *</FormLabel>
+                  <FormLabel>部署</FormLabel>
                   <FormControl>
                     <Input placeholder="営業1課" {...field} />
                   </FormControl>

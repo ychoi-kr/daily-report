@@ -40,6 +40,7 @@ export interface User {
   email: string;
   department: string;
   is_manager: boolean;
+  is_active?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -149,6 +150,7 @@ export interface CreateCommentDto {
 // 営業担当者関連
 export interface SalesPerson extends User {
   password?: never; // パスワードは含まない
+  is_active: boolean; // 営業担当者では必須
 }
 
 export interface CreateSalesPersonDto {
@@ -157,6 +159,7 @@ export interface CreateSalesPersonDto {
   password: string;
   department: string;
   is_manager: boolean;
+  is_active?: boolean;
 }
 
 export interface UpdateSalesPersonDto {
@@ -164,6 +167,7 @@ export interface UpdateSalesPersonDto {
   email?: string;
   department?: string;
   is_manager?: boolean;
+  is_active?: boolean;
 }
 
 // HTTPメソッド型
