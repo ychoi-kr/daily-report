@@ -2,6 +2,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import SalesPersonsPage from './page';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock components
 vi.mock('@/components/layout/DashboardLayout', () => ({
@@ -38,9 +39,12 @@ vi.mock('@/components/sales-persons/password-reset-dialog', () => ({
   ),
 }));
 
+const mockToast = vi.fn();
 vi.mock('@/hooks/use-toast', () => ({
   useToast: () => ({
-    toast: vi.fn(),
+    toast: mockToast,
+    dismiss: vi.fn(),
+    toasts: [],
   }),
 }));
 
@@ -84,6 +88,7 @@ describe('SalesPersonsPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockToast.mockClear();
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ data: mockSalesPersons }),
@@ -251,11 +256,6 @@ describe('SalesPersonsPage', () => {
 
   it('API エラー時にエラーメッセージが表示される', async () => {
     // Arrange
-    const mockToast = vi.fn();
-    vi.mocked(require('@/hooks/use-toast').useToast).mockReturnValue({
-      toast: mockToast,
-    });
-
     mockFetch.mockRejectedValue(new Error('API Error'));
 
     // Act

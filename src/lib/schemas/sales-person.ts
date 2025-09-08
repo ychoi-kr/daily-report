@@ -6,12 +6,11 @@ export const SalesPersonSchema = z.object({
   name: z
     .string()
     .min(1, '氏名は必須です')
-    .max(100, '氏名は100文字以内で入力してください'),
+    .max(50, '氏名は50文字以内で入力してください'),
   email: z.string().email('有効なメールアドレスを入力してください'),
   department: z
     .string()
-    .min(1, '部署は必須です')
-    .max(100, '部署は100文字以内で入力してください'),
+    .max(50, '部署は50文字以内で入力してください'),
   is_manager: z.boolean(),
 });
 
@@ -26,13 +25,12 @@ export const CreateSalesPersonRequestSchema = z.object({
   name: z
     .string()
     .min(1, '氏名は必須です')
-    .max(100, '氏名は100文字以内で入力してください'),
+    .max(50, '氏名は50文字以内で入力してください'),
   email: z.string().email('有効なメールアドレスを入力してください'),
   password: z.string().min(8, 'パスワードは8文字以上である必要があります'),
   department: z
     .string()
-    .min(1, '部署は必須です')
-    .max(100, '部署は100文字以内で入力してください'),
+    .max(50, '部署は50文字以内で入力してください'),
   is_manager: z.boolean(),
 });
 

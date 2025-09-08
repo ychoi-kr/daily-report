@@ -7,7 +7,7 @@ export const createSalesPersonSchema = z.object({
   name: z
     .string()
     .min(1, '氏名は必須です')
-    .max(100, '氏名は100文字以内で入力してください'),
+    .max(50, '氏名は50文字以内で入力してください'),
   email: z
     .string()
     .min(1, 'メールアドレスは必須です')
@@ -23,8 +23,9 @@ export const createSalesPersonSchema = z.object({
     ),
   department: z
     .string()
-    .min(1, '部署は必須です')
-    .max(100, '部署は100文字以内で入力してください'),
+    .max(50, '部署は50文字以内で入力してください')
+    .optional()
+    .default(''),
   is_manager: z.boolean().default(false),
   is_active: z.boolean().default(true),
 });
@@ -36,7 +37,7 @@ export const updateSalesPersonSchema = z.object({
   name: z
     .string()
     .min(1, '氏名は必須です')
-    .max(100, '氏名は100文字以内で入力してください')
+    .max(50, '氏名は50文字以内で入力してください')
     .optional(),
   email: z
     .string()
@@ -46,8 +47,7 @@ export const updateSalesPersonSchema = z.object({
     .optional(),
   department: z
     .string()
-    .min(1, '部署は必須です')
-    .max(100, '部署は100文字以内で入力してください')
+    .max(50, '部署は50文字以内で入力してください')
     .optional(),
   is_manager: z.boolean().optional(),
   is_active: z.boolean().optional(),
