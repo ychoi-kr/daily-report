@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { ConfirmationProvider } from '@/components/common/dialog/confirmation-dialog';
+import { GlobalToastInitializer } from '@/components/common/notifications/toast-provider';
 import './globals.css';
 
 const inter = Inter({
@@ -33,8 +35,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
-            <Toaster />
+            <ConfirmationProvider>
+              {children}
+              <Toaster />
+              <GlobalToastInitializer />
+            </ConfirmationProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
