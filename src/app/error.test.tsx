@@ -46,7 +46,10 @@ describe('Error Component', () => {
 
   it('logs error to console', () => {
     render(<ErrorBoundary error={mockError} reset={mockReset} />);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Application error:',
+      mockError
+    );
   });
 
   it('calls reset function when retry button is clicked', () => {
@@ -68,10 +71,10 @@ describe('Error Component', () => {
     render(<ErrorBoundary error={mockError} reset={mockReset} />);
 
     const retryButton = screen.getByRole('button', { name: /もう一度試す/i });
-    expect(retryButton).toHaveClass('btn-primary');
+    expect(retryButton).toHaveClass('bg-primary');
 
     const homeLink = screen.getByRole('link', { name: /ホームへ戻る/i });
-    expect(homeLink).toHaveClass('btn-secondary');
+    expect(homeLink).toHaveClass('border');
   });
 
   it('handles error with digest property', () => {
@@ -81,6 +84,9 @@ describe('Error Component', () => {
     } as Error & { digest?: string };
 
     render(<ErrorBoundary error={errorWithDigest} reset={mockReset} />);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(errorWithDigest);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Application error:',
+      errorWithDigest
+    );
   });
 });

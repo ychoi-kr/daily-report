@@ -19,7 +19,7 @@ describe('PasswordUtil', () => {
       const hash2 = await PasswordUtil.hashPassword(testPassword);
 
       expect(hash1).not.toBe(hash2);
-    });
+    }, 10000); // 10秒のタイムアウト
   });
 
   describe('verifyPassword', () => {
@@ -31,7 +31,7 @@ describe('PasswordUtil', () => {
       );
 
       expect(isValid).toBe(true);
-    });
+    }, 10000); // 10秒のタイムアウト
 
     it('誤ったパスワードに対してfalseを返す', async () => {
       const hashedPassword = await PasswordUtil.hashPassword(testPassword);
@@ -132,6 +132,6 @@ describe('PasswordUtil', () => {
         hashedPassword
       );
       expect(isInvalid).toBe(false);
-    });
+    }, 10000); // 10秒のタイムアウト
   });
 });

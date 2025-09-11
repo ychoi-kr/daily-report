@@ -35,7 +35,7 @@ describe('NotFound Page', () => {
 
   it('has proper styling classes', () => {
     render(<NotFound />);
-    const homeLink = screen.getByRole('link', { name: /ホームへ戻る/i });
-    expect(homeLink).toHaveClass('btn-primary');
+    const homeButton = screen.getByRole('button', { name: /ホームへ戻る/i });
+    expect(homeButton).toHaveClass('bg-primary');
   });
 });
