@@ -19,13 +19,13 @@ describe('Loading Component', () => {
     render(<Loading />);
     const spinner = document.querySelector('.animate-spin');
     expect(spinner).toHaveClass('animate-spin');
-    expect(spinner).toHaveClass('rounded-full');
-    expect(spinner).toHaveClass('border-primary-600');
+    expect(spinner).toHaveClass('h-8');
+    expect(spinner).toHaveClass('w-8');
   });
 
   it('is centered on the page', () => {
     render(<Loading />);
-    const container = document.querySelector('.min-h-screen');
+    const container = document.querySelector('.fixed');
     expect(container).toHaveClass('flex');
     expect(container).toHaveClass('items-center');
     expect(container).toHaveClass('justify-center');

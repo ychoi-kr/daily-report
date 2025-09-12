@@ -1,16 +1,39 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  vi,
+} from 'vitest';
 import { NextRequest } from 'next/server';
-import { GET as getReports, POST as createReport } from '@/app/api/reports/route';
-import { GET as getReport, PUT as updateReport, DELETE as deleteReport } from '@/app/api/reports/[id]/route';
-import { GET as getComments, POST as createComment } from '@/app/api/reports/[id]/comments/route';
-import { PrismaClient } from '@prisma/client';
+import {
+  GET as getReports,
+  POST as createReport,
+} from '@/app/api/reports/route';
+import {
+  GET as getReport,
+  PUT as updateReport,
+  DELETE as deleteReport,
+} from '@/app/api/reports/[id]/route';
+import {
+  GET as getComments,
+  POST as createComment,
+} from '@/app/api/reports/[id]/comments/route';
 import { JWTUtil } from '@/lib/auth';
-import bcrypt from 'bcryptjs';
+import {
+  createMockPrismaClient,
+  testUsers,
+  createMockData,
+} from '../utils/prisma-mock';
 
-// Prisma Clientのモック
-vi.mock('@prisma/client', () => {
-  const PrismaClient = vi.fn();
-  return { PrismaClient };
+// Prismaクライアントをグローバルにモック
+vi.mock('@/lib/db', () => {
+  const mockPrisma = createMockPrismaClient();
+  return {
+    prisma: mockPrisma,
+  };
 });
 
 describe('Reports API', () => {
@@ -22,50 +45,11 @@ describe('Reports API', () => {
 
   beforeAll(() => {
     // Prismaモックのセットアップ
-    prisma = {
-      dailyReport: {
-        findMany: vi.fn(),
-        findUnique: vi.fn(),
-        create: vi.fn(),
-        update: vi.fn(),
-        delete: vi.fn(),
-        count: vi.fn(),
-      },
-      visitRecord: {
-        createMany: vi.fn(),
-        deleteMany: vi.fn(),
-        create: vi.fn(),
-        update: vi.fn(),
-      },
-      managerComment: {
-        findMany: vi.fn(),
-        create: vi.fn(),
-      },
-      salesPerson: {
-        findUnique: vi.fn(),
-      },
-      $transaction: vi.fn((callback) => callback(prisma)),
-      $disconnect: vi.fn(),
-    };
+    prisma = createMockPrismaClient();
 
-    (PrismaClient as any).mockImplementation(() => prisma);
-
-    // テストユーザー
-    mockUser = {
-      id: 1,
-      name: 'テストユーザー',
-      email: 'test@example.com',
-      department: '営業部',
-      isManager: false,
-    };
-
-    mockManager = {
-      id: 2,
-      name: 'テスト管理者',
-      email: 'manager@example.com',
-      department: '営業部',
-      isManager: true,
-    };
+    // テストユーザー設定
+    mockUser = testUsers.regularUser;
+    mockManager = testUsers.managerUser;
 
     // JWTトークン生成
     mockToken = JWTUtil.generateAccessToken(mockUser);
@@ -80,15 +64,10 @@ describe('Reports API', () => {
     it('日報一覧を正常に取得できる', async () => {
       const mockReports = [
         {
-          reportId: 1,
-          reportDate: new Date('2025-01-01'),
-          salesPerson: {
-            salesPersonId: 1,
-            name: 'テストユーザー',
-          },
+          ...createMockData.dailyReport({ reportId: 1 }),
+          salesPerson: createMockData.salesPerson({ salesPersonId: 1 }),
           visitRecords: [{ visitId: 1 }, { visitId: 2 }],
           managerComments: [{ commentId: 1 }],
-          createdAt: new Date('2025-01-01T09:00:00Z'),
         },
       ];
 
@@ -116,11 +95,14 @@ describe('Reports API', () => {
       prisma.dailyReport.findMany.mockResolvedValue([]);
       prisma.dailyReport.count.mockResolvedValue(50);
 
-      const request = new NextRequest('http://localhost:3000/api/reports?page=2&per_page=10', {
-        headers: {
-          authorization: `Bearer ${mockToken}`,
-        },
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/reports?page=2&per_page=10',
+        {
+          headers: {
+            authorization: `Bearer ${mockToken}`,
+          },
+        }
+      );
 
       const response = await getReports(request);
       const data = await response.json();
@@ -218,7 +200,7 @@ describe('Reports API', () => {
     it('バリデーションエラーを正しく返す', async () => {
       const invalidData = {
         report_date: 'invalid-date',
-        problem: '',  // 空文字
+        problem: '', // 空文字
         plan: 'テスト計画',
         visits: [],
       };
@@ -466,14 +448,17 @@ describe('Reports API', () => {
         createdAt: new Date(),
       });
 
-      const request = new NextRequest('http://localhost:3000/api/reports/1/comments', {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${mockManagerToken}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(commentData),
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/reports/1/comments',
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${mockManagerToken}`,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(commentData),
+        }
+      );
 
       const response = await createComment(request, { params: { id: '1' } });
       const data = await response.json();
@@ -487,14 +472,17 @@ describe('Reports API', () => {
         comment: 'テストコメント',
       };
 
-      const request = new NextRequest('http://localhost:3000/api/reports/1/comments', {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${mockToken}`, // 一般ユーザー
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(commentData),
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/reports/1/comments',
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${mockToken}`, // 一般ユーザー
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(commentData),
+        }
+      );
 
       const response = await createComment(request, { params: { id: '1' } });
       const data = await response.json();
