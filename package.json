@@ -18,9 +18,21 @@
     "prepare": "husky",
     "openapi:generate": "npx tsx scripts/generate-openapi.ts",
     "api:types": "npx tsx scripts/generate-api-types.ts",
-    "api:generate": "npm run openapi:generate && npm run api:types"
+    "api:generate": "npm run openapi:generate && npm run api:types",
+    "perf:test": "./performance-tests/run-performance-tests.sh --all",
+    "perf:test:api": "./performance-tests/run-performance-tests.sh --test api-response-time",
+    "perf:test:list": "./performance-tests/run-performance-tests.sh --test reports-list-performance",
+    "perf:test:create": "./performance-tests/run-performance-tests.sh --test reports-create-performance",
+    "perf:test:search": "./performance-tests/run-performance-tests.sh --test search-performance",
+    "perf:test:concurrent": "./performance-tests/run-performance-tests.sh --test concurrent-load-test",
+    "perf:setup": "./performance-tests/run-performance-tests.sh --setup",
+    "perf:cleanup": "./performance-tests/run-performance-tests.sh --cleanup",
+    "perf:analyze": "./performance-tests/run-performance-tests.sh --analyze",
+    "perf:seed": "npx tsx performance-tests/utils/seed-large-dataset.ts",
+    "perf:clean": "npx tsx performance-tests/utils/cleanup-test-data.ts"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.3.0",
     "@apidevtools/swagger-parser": "^12.0.0",
     "@asteasolutions/zod-to-openapi": "^8.1.0",
     "@testing-library/jest-dom": "^6.8.0",
