@@ -1,0 +1,65 @@
+{
+  "environment": {
+    "development": {
+      "baseUrl": "http://localhost:3000",
+      "testUserEmail": "test@example.com",
+      "testUserPassword": "Test1234!"
+    },
+    "staging": {
+      "baseUrl": "https://staging.sales-report.example.com",
+      "testUserEmail": "perftest@example.com",
+      "testUserPassword": "Test1234!"
+    },
+    "production": {
+      "baseUrl": "https://api.sales-report.example.com",
+      "testUserEmail": "perftest@example.com",
+      "testUserPassword": "Test1234!"
+    }
+  },
+  "thresholds": {
+    "api": {
+      "p95ResponseTime": 1000,
+      "p99ResponseTime": 2000,
+      "errorRate": 0.01
+    },
+    "reportsList": {
+      "p95ResponseTime": 3000,
+      "p99ResponseTime": 5000,
+      "errorRate": 0.01
+    },
+    "reportCreate": {
+      "p95ResponseTime": 2000,
+      "p99ResponseTime": 3000,
+      "successRate": 0.99
+    },
+    "search": {
+      "p95ResponseTime": 2000,
+      "complexSearchP95": 3000,
+      "errorRate": 0.01
+    },
+    "concurrent": {
+      "maxUsers": 100,
+      "errorRate": 0.01,
+      "successRate": 0.99,
+      "avgResponseTime": 3000
+    }
+  },
+  "testData": {
+    "salesPersonCount": 100,
+    "customerCount": 500,
+    "reportDays": 90,
+    "visitsPerReport": {
+      "min": 1,
+      "max": 5
+    },
+    "commentsPerReport": {
+      "min": 0,
+      "max": 3
+    }
+  },
+  "k6Options": {
+    "insecureSkipTLSVerify": true,
+    "noConnectionReuse": false,
+    "userAgent": "SalesReportPerfTest/1.0"
+  }
+}
