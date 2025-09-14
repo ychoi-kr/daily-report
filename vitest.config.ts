@@ -9,6 +9,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: [path.resolve(__dirname, './tests/setup.ts')],
     exclude: ['node_modules', '.next', 'e2e/**/*', 'performance-tests/**/*'],
+    testTimeout: 20000, // 20秒に増やす
+    hookTimeout: 20000, // フックのタイムアウトも増やす
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [

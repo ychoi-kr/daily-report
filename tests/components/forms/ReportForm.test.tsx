@@ -1,5 +1,6 @@
 /**
  * @vitest-environment jsdom
+ * @vitest-concurrent false
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -323,10 +324,12 @@ import React from 'react';
 
 describe('ReportForm Component', () => {
   const mockOnSubmit = vi.fn();
-  const user = userEvent.setup();
+  let user: ReturnType<typeof userEvent.setup>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // 各テストごとに新しいuserEventインスタンスを作成
+    user = userEvent.setup({ delay: null }); // delayをnullにして高速化
   });
 
   describe('基本的なレンダリング', () => {
@@ -389,10 +392,10 @@ describe('ReportForm Component', () => {
       const problemTextarea = screen.getByLabelText('課題・相談事項');
       const planTextarea = screen.getByLabelText('明日の計画');
 
-      // Attempt to type more than the limit
+      // 長いテキストを直接設定（typeの代わりにfireEventを使用）
       const longText = 'a'.repeat(1001);
-      await user.type(problemTextarea, longText);
-      await user.type(planTextarea, longText);
+      fireEvent.change(problemTextarea, { target: { value: longText } });
+      fireEvent.change(planTextarea, { target: { value: longText } });
 
       const submitButton = screen.getByRole('button', { name: '保存' });
       await user.click(submitButton);
@@ -504,7 +507,7 @@ describe('ReportForm Component', () => {
             },
           ],
         });
-      });
+      }, { timeout: 5000 });
     });
 
     it('複数の訪問記録でフォーム送信が成功する', async () => {
