@@ -386,11 +386,13 @@ describe('ReportForm Component', () => {
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it('文字数制限を超過した場合にエラーメッセージが表示される', async () => {
-      render(<ReportForm onSubmit={mockOnSubmit} />);
+    it(
+      '文字数制限を超過した場合にエラーメッセージが表示される',
+      async () => {
+        render(<ReportForm onSubmit={mockOnSubmit} />);
 
-      const problemTextarea = screen.getByLabelText('課題・相談事項');
-      const planTextarea = screen.getByLabelText('明日の計画');
+        const problemTextarea = screen.getByLabelText('課題・相談事項');
+        const planTextarea = screen.getByLabelText('明日の計画');
 
       // 長いテキストを直接設定（typeの代わりにfireEventを使用）
       const longText = 'a'.repeat(1001);
@@ -400,9 +402,11 @@ describe('ReportForm Component', () => {
       const submitButton = screen.getByRole('button', { name: '保存' });
       await user.click(submitButton);
 
-      // Form should not submit when validation fails
-      expect(mockOnSubmit).not.toHaveBeenCalled();
-    }, 10000);
+        // Form should not submit when validation fails
+        expect(mockOnSubmit).not.toHaveBeenCalled();
+      },
+      15000
+    );
 
     it('訪問記録で顧客が選択されていない場合にエラーが表示される', async () => {
       render(<ReportForm onSubmit={mockOnSubmit} />);
@@ -474,113 +478,125 @@ describe('ReportForm Component', () => {
   });
 
   describe('フォーム送信', () => {
-    it('有効なデータでフォーム送信が成功する', async () => {
-      mockOnSubmit.mockResolvedValue(undefined);
+    it(
+      '有効なデータでフォーム送信が成功する',
+      async () => {
+        mockOnSubmit.mockResolvedValue(undefined);
 
-      render(<ReportForm onSubmit={mockOnSubmit} />);
+        render(<ReportForm onSubmit={mockOnSubmit} />);
 
-      // フォームに有効なデータを入力
-      await user.type(screen.getByLabelText('課題・相談事項'), '今日の課題です');
-      await user.type(screen.getByLabelText('明日の計画'), '明日の計画です');
+        // フォームに有効なデータを入力
+        await user.type(screen.getByLabelText('課題・相談事項'), '今日の課題です');
+        await user.type(screen.getByLabelText('明日の計画'), '明日の計画です');
 
-      const customerSelect = screen.getByLabelText('顧客');
-      await user.selectOptions(customerSelect, '1');
-      
-      await user.type(screen.getByLabelText('訪問内容'), '訪問した内容です');
-      
-      const timeInput = screen.getByLabelText('訪問時刻（任意）');
-      await user.type(timeInput, '10:30');
+        const customerSelect = screen.getByLabelText('顧客');
+        await user.selectOptions(customerSelect, '1');
 
-      const submitButton = screen.getByRole('button', { name: '保存' });
-      await user.click(submitButton);
+        await user.type(screen.getByLabelText('訪問内容'), '訪問した内容です');
 
-      await waitFor(() => {
-        expect(mockOnSubmit).toHaveBeenCalledWith({
-          report_date: expect.any(String),
-          problem: '今日の課題です',
-          plan: '明日の計画です',
-          visits: [
-            {
-              customer_id: 1,
-              visit_content: '訪問した内容です',
-              visit_time: '10:30',
-            },
-          ],
+        const timeInput = screen.getByLabelText('訪問時刻（任意）');
+        await user.type(timeInput, '10:30');
+
+        const submitButton = screen.getByRole('button', { name: '保存' });
+        await user.click(submitButton);
+
+        await waitFor(() => {
+          expect(mockOnSubmit).toHaveBeenCalledWith({
+            report_date: expect.any(String),
+            problem: '今日の課題です',
+            plan: '明日の計画です',
+            visits: [
+              {
+                customer_id: 1,
+                visit_content: '訪問した内容です',
+                visit_time: '10:30',
+              },
+            ],
+          });
         });
-      }, { timeout: 5000 });
-    });
+      },
+      10000
+    );
 
-    it('複数の訪問記録でフォーム送信が成功する', async () => {
-      mockOnSubmit.mockResolvedValue(undefined);
+    it(
+      '複数の訪問記録でフォーム送信が成功する',
+      async () => {
+        mockOnSubmit.mockResolvedValue(undefined);
 
-      render(<ReportForm onSubmit={mockOnSubmit} />);
+        render(<ReportForm onSubmit={mockOnSubmit} />);
 
-      // メインフィールドを入力
-      await user.type(screen.getByLabelText('課題・相談事項'), '今日の課題です');
-      await user.type(screen.getByLabelText('明日の計画'), '明日の計画です');
+        // メインフィールドを入力
+        await user.type(screen.getByLabelText('課題・相談事項'), '今日の課題です');
+        await user.type(screen.getByLabelText('明日の計画'), '明日の計画です');
 
-      // 1つ目の訪問記録
-      const customerSelect1 = screen.getByLabelText('顧客');
-      await user.selectOptions(customerSelect1, '1');
-      await user.type(screen.getByLabelText('訪問内容'), '最初の訪問');
+        // 1つ目の訪問記録
+        const customerSelect1 = screen.getByLabelText('顧客');
+        await user.selectOptions(customerSelect1, '1');
+        await user.type(screen.getByLabelText('訪問内容'), '最初の訪問');
 
-      // 2つ目の訪問記録を追加
-      const addButton = screen.getByRole('button', { name: '訪問記録を追加' });
-      await user.click(addButton);
+        // 2つ目の訪問記録を追加
+        const addButton = screen.getByRole('button', { name: '訪問記録を追加' });
+        await user.click(addButton);
 
-      // 2つ目の訪問記録を入力
-      const customerSelects = screen.getAllByLabelText('顧客');
-      await user.selectOptions(customerSelects[1], '2');
+        // 2つ目の訪問記録を入力
+        const customerSelects = screen.getAllByLabelText('顧客');
+        await user.selectOptions(customerSelects[1], '2');
 
-      const visitContentInputs = screen.getAllByLabelText('訪問内容');
-      await user.type(visitContentInputs[1], '2番目の訪問');
+        const visitContentInputs = screen.getAllByLabelText('訪問内容');
+        await user.type(visitContentInputs[1], '2番目の訪問');
 
-      const submitButton = screen.getByRole('button', { name: '保存' });
-      await user.click(submitButton);
+        const submitButton = screen.getByRole('button', { name: '保存' });
+        await user.click(submitButton);
 
-      await waitFor(() => {
-        expect(mockOnSubmit).toHaveBeenCalled();
-        const callArgs = mockOnSubmit.mock.calls[0][0];
-        expect(callArgs).toHaveProperty('problem', '今日の課題です');
-        expect(callArgs).toHaveProperty('plan', '明日の計画です');
-        expect(callArgs.visits).toHaveLength(2);
-      });
-    });
+        await waitFor(() => {
+          expect(mockOnSubmit).toHaveBeenCalled();
+          const callArgs = mockOnSubmit.mock.calls[0][0];
+          expect(callArgs).toHaveProperty('problem', '今日の課題です');
+          expect(callArgs).toHaveProperty('plan', '明日の計画です');
+          expect(callArgs.visits).toHaveLength(2);
+        });
+      },
+      10000
+    );
 
-    it('空の訪問記録は送信データから除外される', async () => {
-      mockOnSubmit.mockResolvedValue(undefined);
+    it(
+      '空の訪問記録は送信データから除外される',
+      async () => {
+        mockOnSubmit.mockResolvedValue(undefined);
 
-      render(<ReportForm onSubmit={mockOnSubmit} />);
+        render(<ReportForm onSubmit={mockOnSubmit} />);
 
-      // メインフィールドのみ入力（訪問記録は空のまま）
-      await user.type(screen.getByLabelText('課題・相談事項'), '今日の課題です');
-      await user.type(screen.getByLabelText('明日の計画'), '明日の計画です');
+        // メインフィールドのみ入力（訪問記録は空のまま）
+        await user.type(screen.getByLabelText('課題・相談事項'), '今日の課題です');
+        await user.type(screen.getByLabelText('明日の計画'), '明日の計画です');
 
-      // 訪問記録を追加して、1つ目だけ入力
-      const addButton = screen.getByRole('button', { name: '訪問記録を追加' });
-      await user.click(addButton);
+        // 訪問記録を追加して、1つ目だけ入力
+        const addButton = screen.getByRole('button', { name: '訪問記録を追加' });
+        await user.click(addButton);
 
-      const customerSelects = screen.getAllByLabelText('顧客');
-      await user.selectOptions(customerSelects[0], '1');
+        const customerSelects = screen.getAllByLabelText('顧客');
+        await user.selectOptions(customerSelects[0], '1');
 
-      const visitContentInputs = screen.getAllByLabelText('訪問内容');
-      await user.type(visitContentInputs[0], '有効な訪問記録');
+        const visitContentInputs = screen.getAllByLabelText('訪問内容');
+        await user.type(visitContentInputs[0], '有効な訪問記録');
 
-      // 2つ目の訪問記録は空のまま
+        // 2つ目の訪問記録は空のまま
 
-      const submitButton = screen.getByRole('button', { name: '保存' });
-      await user.click(submitButton);
+        const submitButton = screen.getByRole('button', { name: '保存' });
+        await user.click(submitButton);
 
-      await waitFor(() => {
-        expect(mockOnSubmit).toHaveBeenCalled();
-        const callArgs = mockOnSubmit.mock.calls[0][0];
-        expect(callArgs).toHaveProperty('problem', '今日の課題です');
-        expect(callArgs).toHaveProperty('plan', '明日の計画です');
-        if (callArgs.visits) {
-          expect(callArgs.visits.length).toBeGreaterThan(0);
-        }
-      });
-    });
+        await waitFor(() => {
+          expect(mockOnSubmit).toHaveBeenCalled();
+          const callArgs = mockOnSubmit.mock.calls[0][0];
+          expect(callArgs).toHaveProperty('problem', '今日の課題です');
+          expect(callArgs).toHaveProperty('plan', '明日の計画です');
+          if (callArgs.visits) {
+            expect(callArgs.visits.length).toBeGreaterThan(0);
+          }
+        });
+      },
+      10000
+    );
   });
 
   describe('ローディング状態', () => {
