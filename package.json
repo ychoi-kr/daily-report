@@ -61,7 +61,7 @@
     "jsdom": "^26.1.0",
     "k6": "^0.0.0",
     "lint-staged": "^16.1.5",
-    "next": "^15.5.2",
+    "next": "^15.5.11",
     "openapi-fetch": "^0.14.0",
     "openapi-typescript": "^7.9.1",
     "prettier": "^3.6.2",
