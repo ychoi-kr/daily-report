@@ -21,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="container px-4">
         <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
           <div className="flex flex-col items-center space-y-1 md:flex-row md:space-x-4 md:space-y-0">
-            <p>© {currentYear} 営業日報システム. All rights reserved.</p>
+            <p>© {currentYear} 영업 일일 보고 시스템. All rights reserved.</p>
             {showVersion && (
               <p className="text-xs">
                 Version {version}
@@ -34,21 +34,21 @@ export const Footer: React.FC<FooterProps> = ({
               className="hover:text-foreground transition-colors"
               aria-label="Help"
             >
-              ヘルプ
+              도움말
             </a>
             <a
               href="/privacy"
               className="hover:text-foreground transition-colors"
               aria-label="Privacy Policy"
             >
-              プライバシーポリシー
+              개인정보처리방침
             </a>
             <a
               href="/terms"
               className="hover:text-foreground transition-colors"
               aria-label="Terms of Service"
             >
-              利用規約
+              이용약관
             </a>
           </div>
         </div>

@@ -60,16 +60,16 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     // Check header is rendered
-    expect(screen.getByText('営業日報システム')).toBeInTheDocument();
-    
+    expect(screen.getByText('영업 일일 보고 시스템')).toBeInTheDocument();
+
     // Check content is rendered
     expect(screen.getByText('Test Content')).toBeInTheDocument();
-    
+
     // Check footer is rendered
     const currentYear = new Date().getFullYear();
-    expect(screen.getByText(`© ${currentYear} 営業日報システム. All rights reserved.`))
+    expect(screen.getByText(`© ${currentYear} 영업 일일 보고 시스템. All rights reserved.`))
       .toBeInTheDocument();
   });
 
@@ -79,11 +79,11 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     // Click on user menu button in header
     const userButton = screen.getByRole('button', { name: /user menu/i });
     fireEvent.click(userButton);
-    
+
     // Check user info is displayed
     expect(screen.getByText(mockUser.name)).toBeInTheDocument();
     expect(screen.getByText(mockUser.email)).toBeInTheDocument();
@@ -95,14 +95,14 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     // Mobile menu should not be initially visible
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    
+
     // Click mobile menu button
     const mobileMenuButton = screen.getByRole('button', { name: /toggle menu/i });
     fireEvent.click(mobileMenuButton);
-    
+
     // Mobile menu should now be visible (Sheet component creates a dialog role)
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
@@ -113,9 +113,9 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     const currentYear = new Date().getFullYear();
-    expect(screen.queryByText(`© ${currentYear} 営業日報システム. All rights reserved.`))
+    expect(screen.queryByText(`© ${currentYear} 영업 일일 보고 시스템. All rights reserved.`))
       .not.toBeInTheDocument();
   });
 
@@ -125,9 +125,9 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     const currentYear = new Date().getFullYear();
-    expect(screen.getByText(`© ${currentYear} 営業日報システム. All rights reserved.`))
+    expect(screen.getByText(`© ${currentYear} 영업 일일 보고 시스템. All rights reserved.`))
       .toBeInTheDocument();
   });
 
@@ -137,15 +137,15 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     // Click on user menu button
     const userButton = screen.getByRole('button', { name: /user menu/i });
     fireEvent.click(userButton);
-    
+
     // Click logout
-    const logoutButton = screen.getByText('ログアウト');
+    const logoutButton = screen.getByText('로그아웃');
     fireEvent.click(logoutButton);
-    
+
     expect(mockOnLogout).toHaveBeenCalledTimes(1);
   }, 10000);
 
@@ -157,13 +157,13 @@ describe('MainLayout', () => {
         <button>Test Button</button>
       </div>
     );
-    
+
     render(
       <MainLayout user={mockUser} onLogout={mockOnLogout}>
         <TestComponent />
       </MainLayout>
     );
-    
+
     expect(screen.getByText('Test Title')).toBeInTheDocument();
     expect(screen.getByText('Test paragraph')).toBeInTheDocument();
     expect(screen.getByText('Test Button')).toBeInTheDocument();
@@ -175,20 +175,20 @@ describe('MainLayout', () => {
         <div>Content 1</div>
       </MainLayout>
     );
-    
+
     expect(screen.getByText('Content 1')).toBeInTheDocument();
-    
+
     rerender(
       <MainLayout user={mockUser} onLogout={mockOnLogout}>
         <div>Content 2</div>
       </MainLayout>
     );
-    
+
     expect(screen.queryByText('Content 1')).not.toBeInTheDocument();
     expect(screen.getByText('Content 2')).toBeInTheDocument();
-    
+
     // Layout components should still be present
-    expect(screen.getByText('営業日報システム')).toBeInTheDocument();
+    expect(screen.getByText('영업 일일 보고 시스템')).toBeInTheDocument();
   });
 
   it('handles undefined user gracefully', () => {
@@ -197,9 +197,9 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     // Should show login button instead of user menu
-    expect(screen.getByText('ログイン')).toBeInTheDocument();
+    expect(screen.getByText('로그인')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /user menu/i })).not.toBeInTheDocument();
   });
 
@@ -209,17 +209,17 @@ describe('MainLayout', () => {
         <div>Test Content</div>
       </MainLayout>
     );
-    
+
     // Find collapse button
     const collapseButton = screen.getByLabelText(/collapse sidebar/i);
-    
+
     // Initially sidebar should be expanded (w-64)
     const sidebar = container.querySelector('aside');
     expect(sidebar).toHaveClass('w-64');
-    
+
     // Click to collapse
     fireEvent.click(collapseButton);
-    
+
     // Sidebar should now be collapsed (w-16)
     expect(sidebar).toHaveClass('w-16');
   });

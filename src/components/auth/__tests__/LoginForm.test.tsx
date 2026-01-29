@@ -19,26 +19,26 @@ describe('LoginForm', () => {
   it('正しくレンダリングされる', () => {
     render(<LoginForm {...defaultProps} />);
 
-    expect(screen.getByText('営業日報システム')).toBeInTheDocument();
+    expect(screen.getByText('영업 일일 보고 시스템')).toBeInTheDocument();
     expect(
-      screen.getByText('メールアドレスとパスワードでログインしてください')
+      screen.getByText('이메일과 비밀번호로 로그인해주세요')
     ).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText('yamada@example.com')
     ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('パスワードを入力')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('비밀번호 입력')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'ログイン' })
+      screen.getByRole('button', { name: '로그인' })
     ).toBeInTheDocument();
   });
 
   it('テスト用アカウント情報が表示される', () => {
     render(<LoginForm {...defaultProps} />);
 
-    expect(screen.getByText('テスト用アカウント:')).toBeInTheDocument();
-    expect(screen.getByText('メール: yamada@example.com')).toBeInTheDocument();
-    expect(screen.getAllByText('パスワード: Password123')).toHaveLength(2); // 一般ユーザーと管理者の両方
-    expect(screen.getByText('メール: tanaka@example.com')).toBeInTheDocument();
+    expect(screen.getByText('테스트용 계정:')).toBeInTheDocument();
+    expect(screen.getByText('메일: yamada@example.com')).toBeInTheDocument();
+    expect(screen.getAllByText('비밀번호: Password123')).toHaveLength(2); // 一般ユーザーと管理者の両方
+    expect(screen.getByText('메일: tanaka@example.com')).toBeInTheDocument();
   });
 
   it('エラーメッセージが表示される', () => {
@@ -51,11 +51,11 @@ describe('LoginForm', () => {
   it('ローディング状態が正しく表示される', () => {
     render(<LoginForm {...defaultProps} isLoading={true} />);
 
-    expect(screen.getByText('ログイン中...')).toBeInTheDocument();
+    expect(screen.getByText('로그인 중...')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('yamada@example.com')).toBeDisabled();
-    expect(screen.getByPlaceholderText('パスワードを入力')).toBeDisabled();
+    expect(screen.getByPlaceholderText('비밀번호 입력')).toBeDisabled();
     expect(
-      screen.getByRole('button', { name: 'ログイン中...' })
+      screen.getByRole('button', { name: '로그인 중...' })
     ).toBeDisabled();
   });
 
@@ -63,9 +63,9 @@ describe('LoginForm', () => {
     const user = userEvent.setup();
     render(<LoginForm {...defaultProps} />);
 
-    const passwordInput = screen.getByPlaceholderText('パスワードを入力');
+    const passwordInput = screen.getByPlaceholderText('비밀번호 입력');
     const toggleButton = screen.getByRole('button', {
-      name: 'パスワードを表示',
+      name: '비밀번호 표시',
     });
 
     // 初期状態はパスワード（type="password"）
@@ -75,7 +75,7 @@ describe('LoginForm', () => {
     await user.click(toggleButton);
     expect(passwordInput).toHaveAttribute('type', 'text');
     expect(
-      screen.getByRole('button', { name: 'パスワードを隠す' })
+      screen.getByRole('button', { name: '비밀번호 숨기기' })
     ).toBeInTheDocument();
 
     // 再度クリックでパスワード表示に戻る
@@ -89,7 +89,7 @@ describe('LoginForm', () => {
       render(<LoginForm {...defaultProps} />);
 
       const emailInput = screen.getByPlaceholderText('yamada@example.com');
-      const submitButton = screen.getByRole('button', { name: 'ログイン' });
+      const submitButton = screen.getByRole('button', { name: '로그인' });
 
       await user.type(emailInput, 'invalid-email');
       await user.click(submitButton);
@@ -102,15 +102,15 @@ describe('LoginForm', () => {
       const user = userEvent.setup();
       render(<LoginForm {...defaultProps} />);
 
-      const passwordInput = screen.getByPlaceholderText('パスワードを入力');
-      const submitButton = screen.getByRole('button', { name: 'ログイン' });
+      const passwordInput = screen.getByPlaceholderText('비밀번호 입력');
+      const submitButton = screen.getByRole('button', { name: '로그인' });
 
       await user.type(passwordInput, '1234567'); // 7文字
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(
-          screen.getByText('パスワードは8文字以上である必要があります')
+          screen.getByText('비밀번호는 8자 이상이어야 합니다')
         ).toBeInTheDocument();
       });
 
@@ -121,13 +121,13 @@ describe('LoginForm', () => {
       const user = userEvent.setup();
       render(<LoginForm {...defaultProps} />);
 
-      const submitButton = screen.getByRole('button', { name: 'ログイン' });
+      const submitButton = screen.getByRole('button', { name: '로그인' });
 
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(
-          screen.getByText('有効なメールアドレスを入力してください')
+          screen.getByText('유효한 이메일 주소를 입력해주세요')
         ).toBeInTheDocument();
       });
 
@@ -143,8 +143,8 @@ describe('LoginForm', () => {
       render(<LoginForm {...defaultProps} />);
 
       const emailInput = screen.getByPlaceholderText('yamada@example.com');
-      const passwordInput = screen.getByPlaceholderText('パスワードを入力');
-      const submitButton = screen.getByRole('button', { name: 'ログイン' });
+      const passwordInput = screen.getByPlaceholderText('비밀번호 입력');
+      const submitButton = screen.getByRole('button', { name: '로그인' });
 
       await user.type(emailInput, 'yamada@example.com');
       await user.type(passwordInput, 'password123');
@@ -169,8 +169,8 @@ describe('LoginForm', () => {
       render(<LoginForm {...defaultProps} />);
 
       const emailInput = screen.getByPlaceholderText('yamada@example.com');
-      const passwordInput = screen.getByPlaceholderText('パスワードを入力');
-      const submitButton = screen.getByRole('button', { name: 'ログイン' });
+      const passwordInput = screen.getByPlaceholderText('비밀번호 입력');
+      const submitButton = screen.getByRole('button', { name: '로그인' });
 
       await user.type(emailInput, 'yamada@example.com');
       await user.type(passwordInput, 'password123');
@@ -190,9 +190,9 @@ describe('LoginForm', () => {
       render(<LoginForm {...defaultProps} />);
 
       const emailInput = screen.getByPlaceholderText('yamada@example.com');
-      const passwordInput = screen.getByPlaceholderText('パスワードを入力');
+      const passwordInput = screen.getByPlaceholderText('비밀번호 입력');
       const toggleButton = screen.getByRole('button', {
-        name: 'パスワードを表示',
+        name: '비밀번호 표시',
       });
 
       expect(emailInput).toHaveAttribute('type', 'email');

@@ -50,12 +50,12 @@ describe('Header', () => {
 
   it('renders system title', () => {
     render(<Header />);
-    expect(screen.getByText('営業日報システム')).toBeInTheDocument();
+    expect(screen.getByText('영업 일일 보고 시스템')).toBeInTheDocument();
   });
 
   it('displays user information when user is logged in', () => {
     render(<Header user={mockUser} onLogout={mockOnLogout} />);
-    
+
     // User information should be displayed in the dropdown content
     expect(screen.getByText(mockUser.name)).toBeInTheDocument();
     expect(screen.getByText(mockUser.email)).toBeInTheDocument();
@@ -65,22 +65,22 @@ describe('Header', () => {
   it('shows manager badge for manager users', () => {
     const managerUser = { ...mockUser, isManager: true };
     render(<Header user={managerUser} onLogout={mockOnLogout} />);
-    
-    expect(screen.getByText('管理者')).toBeInTheDocument();
+
+    expect(screen.getByText('관리자')).toBeInTheDocument();
   });
 
   it('displays login button when user is not logged in', () => {
     render(<Header />);
-    expect(screen.getByText('ログイン')).toBeInTheDocument();
+    expect(screen.getByText('로그인')).toBeInTheDocument();
   });
 
   it('calls onLogout when logout is clicked', () => {
     render(<Header user={mockUser} onLogout={mockOnLogout} />);
-    
+
     // Click logout
-    const logoutButton = screen.getByText('ログアウト');
+    const logoutButton = screen.getByText('로그아웃');
     fireEvent.click(logoutButton);
-    
+
     expect(mockOnLogout).toHaveBeenCalledTimes(1);
   });
 
@@ -92,7 +92,7 @@ describe('Header', () => {
         onMobileMenuToggle={mockOnMobileMenuToggle}
       />
     );
-    
+
     const mobileMenuButton = screen.getByRole('button', { name: /toggle menu/i });
     expect(mobileMenuButton).toBeInTheDocument();
   });
@@ -105,7 +105,7 @@ describe('Header', () => {
         onMobileMenuToggle={mockOnMobileMenuToggle}
       />
     );
-    
+
     const mobileMenuButton = screen.queryByRole('button', { name: /toggle menu/i });
     expect(mobileMenuButton).not.toBeInTheDocument();
   });
@@ -118,23 +118,23 @@ describe('Header', () => {
         onMobileMenuToggle={mockOnMobileMenuToggle}
       />
     );
-    
+
     const mobileMenuButton = screen.getByRole('button', { name: /toggle menu/i });
     fireEvent.click(mobileMenuButton);
-    
+
     expect(mockOnMobileMenuToggle).toHaveBeenCalledTimes(1);
   });
 
   it('displays user initials in avatar when no avatar URL is provided', () => {
     render(<Header user={mockUser} onLogout={mockOnLogout} />);
-    
+
     const avatar = screen.getByText('山');
     expect(avatar).toBeInTheDocument();
   });
 
   it('has theme toggle button', () => {
     render(<Header user={mockUser} />);
-    
+
     const themeToggle = screen.getByRole('button', { name: /toggle theme/i });
     expect(themeToggle).toBeInTheDocument();
   });
