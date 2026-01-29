@@ -5,56 +5,56 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="max-w-5xl w-full">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">営業日報システム</h1>
+          <h1 className="text-4xl font-bold mb-4">영업 일일 보고 시스템</h1>
           <p className="text-lg text-gray-600">
-            営業担当者が日々の活動を報告し、上長がフィードバックを行うためのシステムです
+            영업 담당자가 일일 활동을 보고하고 상사가 피드백을 제공하는 시스템입니다
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">🚀 クイックスタート</h2>
+            <h2 className="text-xl font-semibold mb-4">🚀 빠른 시작</h2>
             <p className="text-gray-600 mb-4">
-              システムを利用開始するには、まずログインしてください。
+              시스템을 이용하려면 먼저 로그인해주세요.
             </p>
             <Link href="/login" className="btn-primary">
-              ログインページへ
+              로그인 페이지로
             </Link>
           </div>
 
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">📊 日報管理</h2>
+            <h2 className="text-xl font-semibold mb-4">📊 일일 보고 관리</h2>
             <p className="text-gray-600 mb-4">
-              日報の作成、閲覧、管理を効率的に行えます。
+              일일 보고의 작성, 열람, 관리를 효율적으로 수행합니다.
             </p>
             <Link href="/reports" className="btn-secondary">
-              日報一覧へ
+              일일 보고 목록으로
             </Link>
           </div>
 
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">👥 顧客管理</h2>
+            <h2 className="text-xl font-semibold mb-4">👥 고객 관리</h2>
             <p className="text-gray-600 mb-4">
-              訪問先の顧客情報を一元管理できます。
+              방문한 고객 정보를 일원화하여 관리합니다.
             </p>
             <Link href="/customers" className="btn-secondary">
-              顧客管理へ
+              고객 관리로
             </Link>
           </div>
 
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">👥 営業担当者管理</h2>
+            <h2 className="text-xl font-semibold mb-4">👥 영업 담당자 관리</h2>
             <p className="text-gray-600 mb-4">
-              営業担当者の情報を管理できます（管理者のみ）。
+              영업 담당자의 정보를 관리합니다 (관리자 전용).
             </p>
             <Link href="/sales-persons" className="btn-secondary">
-              営業担当者管理へ
+              영업 담당자 관리로
             </Link>
           </div>
         </div>
 
         <div className="mt-12 text-center text-sm text-gray-500">
-          <p>© 2025 営業日報システム. All rights reserved.</p>
+          <p>© 2025 영업 일일 보고 시스템. All rights reserved.</p>
         </div>
       </div>
     </main>

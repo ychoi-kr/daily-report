@@ -25,13 +25,13 @@ export default function DashboardPage() {
       onLogout={logout}
     >
       <div className="space-y-6">
-        <PageHeader title="ダッシュボード" />
+        <PageHeader title="대시보드" />
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                今月の日報数
+                이번 달 일일 보고 수
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -45,7 +45,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                今月の訪問件数
+                이번 달 방문 건수
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -59,22 +59,22 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                未読コメント
+                읽지 않은 코멘트
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground">要確認</p>
+              <p className="text-xs text-muted-foreground">확인 필요</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">今週の予定</CardTitle>
+              <CardTitle className="text-sm font-medium">이번 주 일정</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground">件の訪問予定</p>
+              <p className="text-xs text-muted-foreground">건의 방문 예정</p>
             </CardContent>
           </Card>
         </div>
@@ -82,38 +82,38 @@ export default function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-4">
             <CardHeader>
-              <CardTitle>最近の活動</CardTitle>
-              <CardDescription>最近の日報と訪問記録</CardDescription>
+              <CardTitle>최근 활동</CardTitle>
+              <CardDescription>최근 일일 보고 및 방문 기록</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
               <div className="space-y-4">
                 <div className="flex items-center">
                   <div className="ml-4 space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      2025/09/04 - ABC商事訪問
+                      2025/09/04 - ABC상사 방문
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      新商品の提案を実施しました
+                      신상품 제안을 실시했습니다
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="ml-4 space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      2025/09/03 - XYZ工業訪問
+                      2025/09/03 - XYZ공업 방문
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      既存システムの保守相談
+                      기존 시스템 유지보수 상담
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="ml-4 space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      2025/09/02 - DEF株式会社訪問
+                      2025/09/02 - DEF주식회사 방문
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      契約更新の打ち合わせ
+                      계약 갱신 미팅
                     </p>
                   </div>
                 </div>
@@ -123,22 +123,22 @@ export default function DashboardPage() {
 
           <Card className="col-span-3">
             <CardHeader>
-              <CardTitle>今週の目標</CardTitle>
-              <CardDescription>今週達成したい目標</CardDescription>
+              <CardTitle>이번 주 목표</CardTitle>
+              <CardDescription>이번 주 달성하고 싶은 목표</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm">新規開拓</span>
-                  <span className="text-sm font-medium">5/10 件</span>
+                  <span className="text-sm">신규 개척</span>
+                  <span className="text-sm font-medium">5/10 건</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">既存顧客フォロー</span>
-                  <span className="text-sm font-medium">8/12 件</span>
+                  <span className="text-sm">기존 고객 관리</span>
+                  <span className="text-sm font-medium">8/12 건</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">提案書作成</span>
-                  <span className="text-sm font-medium">3/5 件</span>
+                  <span className="text-sm">제안서 작성</span>
+                  <span className="text-sm font-medium">3/5 건</span>
                 </div>
               </div>
             </CardContent>

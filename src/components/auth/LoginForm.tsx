@@ -54,9 +54,9 @@ export function LoginForm({
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">営業日報システム</h1>
+        <h1 className="text-2xl font-bold">영업 일일 보고 시스템</h1>
         <p className="text-muted-foreground">
-          メールアドレスとパスワードでログインしてください
+          이메일과 비밀번호로 로그인해주세요
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export function LoginForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>メールアドレス</FormLabel>
+                <FormLabel>이메일</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -94,13 +94,13 @@ export function LoginForm({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>パスワード</FormLabel>
+                <FormLabel>비밀번호</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       {...field}
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="パスワードを入力"
+                      placeholder="비밀번호 입력"
                       disabled={isLoading}
                       autoComplete="current-password"
                       className="pr-10"
@@ -120,7 +120,7 @@ export function LoginForm({
                         <Eye className="h-4 w-4" />
                       )}
                       <span className="sr-only">
-                        {showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
+                        {showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
                       </span>
                     </Button>
                   </div>
@@ -132,22 +132,22 @@ export function LoginForm({
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading ? 'ログイン中...' : 'ログイン'}
+            {isLoading ? '로그인 중...' : '로그인'}
           </Button>
         </form>
       </Form>
 
       <div className="text-center text-sm text-muted-foreground">
-        <p>テスト用アカウント:</p>
+        <p>테스트용 계정:</p>
         <div className="mt-2">
-          <p className="font-semibold">一般ユーザー:</p>
-          <p>メール: yamada@example.com</p>
-          <p>パスワード: Password123</p>
+          <p className="font-semibold">일반 사용자:</p>
+          <p>메일: yamada@example.com</p>
+          <p>비밀번호: Password123</p>
         </div>
         <div className="mt-2">
-          <p className="font-semibold">管理者:</p>
-          <p>メール: tanaka@example.com</p>
-          <p>パスワード: Password123</p>
+          <p className="font-semibold">관리자:</p>
+          <p>메일: tanaka@example.com</p>
+          <p>비밀번호: Password123</p>
         </div>
       </div>
     </div>

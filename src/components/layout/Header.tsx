@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
             <FileText className="h-6 w-6 text-primary" />
-            <h1 className="text-lg font-bold md:text-xl">営業日報システム</h1>
+            <h1 className="text-lg font-bold md:text-xl">영업 일일 보고 시스템</h1>
           </Link>
         </div>
 
@@ -91,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                     )}
                     {user.isManager && (
-                      <Badge className="mt-1 text-xs">管理者</Badge>
+                      <Badge className="mt-1 text-xs">관리자</Badge>
                     )}
                   </div>
                 </DropdownMenuLabel>
@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/profile">
                     <UserIcon className="mr-2 h-4 w-4" />
-                    <span>プロフィール</span>
+                    <span>프로필</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -108,13 +108,13 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={onLogout}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>ログアウト</span>
+                  <span>로그아웃</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button asChild variant="default" size="sm">
-              <Link href="/login">ログイン</Link>
+              <Link href="/login">로그인</Link>
             </Button>
           )}
         </div>

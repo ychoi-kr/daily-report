@@ -28,31 +28,31 @@ import type { SidebarProps, MenuItem } from '@/types/layout';
 const defaultMenuItems: MenuItem[] = [
   {
     id: 'home',
-    label: 'ホーム',
+    label: '홈',
     href: '/',
     icon: <Home className="h-4 w-4" />,
   },
   {
     id: 'reports',
-    label: '日報管理',
+    label: '일일 보고 관리',
     href: '/reports',
     icon: <FileText className="h-4 w-4" />,
     children: [
       {
         id: 'reports-list',
-        label: '日報一覧',
+        label: '일일 보고 목록',
         href: '/reports',
         icon: <ClipboardList className="h-4 w-4" />,
       },
       {
         id: 'reports-new',
-        label: '日報作成',
+        label: '일일 보고 작성',
         href: '/reports/new',
         icon: <PlusCircle className="h-4 w-4" />,
       },
       {
         id: 'reports-calendar',
-        label: 'カレンダー表示',
+        label: '캘린더 보기',
         href: '/reports/calendar',
         icon: <Calendar className="h-4 w-4" />,
       },
@@ -60,27 +60,27 @@ const defaultMenuItems: MenuItem[] = [
   },
   {
     id: 'analytics',
-    label: '分析・レポート',
+    label: '분석/리포트',
     href: '/analytics',
     icon: <BarChart3 className="h-4 w-4" />,
     badge: 'New',
   },
   {
     id: 'master-data',
-    label: 'マスタ管理',
+    label: '마스터 관리',
     href: '#',
     icon: <Settings className="h-4 w-4" />,
     requiredRole: 'manager',
     children: [
       {
         id: 'customers',
-        label: '顧客管理',
+        label: '고객 관리',
         href: '/customers',
         icon: <Building className="h-4 w-4" />,
       },
       {
         id: 'sales-persons',
-        label: '営業担当者管理',
+        label: '영업 담당자 관리',
         href: '/sales-persons',
         icon: <Users className="h-4 w-4" />,
       },
@@ -88,7 +88,7 @@ const defaultMenuItems: MenuItem[] = [
   },
   {
     id: 'help',
-    label: 'ヘルプ',
+    label: '도움말',
     href: '/help',
     icon: <HelpCircle className="h-4 w-4" />,
   },
@@ -142,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const renderMenuItem = (item: MenuItem, depth = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.has(item.id);
-    const isActive = pathname === item.href || 
+    const isActive = pathname === item.href ||
       (hasChildren && item.children?.some(child => pathname === child.href));
 
     if (hasChildren && !isCollapsed) {
@@ -228,7 +228,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </nav>
       </ScrollArea>
-      
+
       {onCollapse && (
         <div className="border-t p-3">
           <Button
