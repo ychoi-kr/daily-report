@@ -34,7 +34,7 @@ import {
   Filter
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import { ko } from 'date-fns/locale';
 
 interface AnalyticsData {
   totalReports: number;
@@ -93,11 +93,11 @@ export default function AnalyticsPage() {
 
       // Mock data for demonstration (in real app, this would come from API)
       const topCustomers = [
-        { name: 'ABC商事', visits: 15 },
-        { name: 'XYZ工業', visits: 12 },
-        { name: 'DEF商社', visits: 10 },
-        { name: 'GHI製造', visits: 8 },
-        { name: 'JKL物産', visits: 6 }
+        { name: 'ABC상사', visits: 15 },
+        { name: 'XYZ공업', visits: 12 },
+        { name: 'DEF상사', visits: 10 },
+        { name: 'GHI제조', visits: 8 },
+        { name: 'JKL물산', visits: 6 }
       ];
 
       const visitsByCustomer = topCustomers.map(c => ({
@@ -106,10 +106,10 @@ export default function AnalyticsPage() {
       }));
 
       const userActivity = [
-        { user: '山田太郎', reports: 25 },
-        { user: '鈴木花子', reports: 20 },
-        { user: '田中一郎', reports: 18 },
-        { user: '佐藤次郎', reports: 15 },
+        { user: '김영수', reports: 25 },
+        { user: '이미영', reports: 20 },
+        { user: '박철수', reports: 18 },
+        { user: '최지영', reports: 15 },
       ];
 
       setAnalyticsData({
@@ -124,8 +124,8 @@ export default function AnalyticsPage() {
     } catch (error) {
       console.error('Failed to fetch analytics data:', error);
       toast({
-        title: 'エラー',
-        description: '分析データの取得に失敗しました',
+        title: '오류',
+        description: '분석 데이터를 가져오는데 실패했습니다',
         variant: 'destructive',
       });
     } finally {
@@ -141,8 +141,8 @@ export default function AnalyticsPage() {
 
   const handleExportData = () => {
     toast({
-      title: 'エクスポート開始',
-      description: 'レポートをダウンロードしています...',
+      title: '내보내기 시작',
+      description: '보고서를 다운로드하고 있습니다...',
     });
     // TODO: Implement actual export functionality
   };
@@ -160,9 +160,9 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <PageHeader 
-            title="分析・レポート" 
-            description="営業活動の分析とレポート"
+          <PageHeader
+            title="분석 · 보고서"
+            description="영업 활동 분석 및 보고서"
           />
           <div className="flex gap-2">
             <DatePickerWithRange
@@ -176,7 +176,7 @@ export default function AnalyticsPage() {
             />
             <Button onClick={handleExportData} variant="outline">
               <Download className="mr-2 h-4 w-4" />
-              エクスポート
+              내보내기
             </Button>
           </div>
         </div>
@@ -186,60 +186,60 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                日報総数
+                일일 보고 총 수
               </CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{analyticsData.totalReports}</div>
               <p className="text-xs text-muted-foreground">
-                期間内の日報数
+                기간 내 일일 보고 수
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                訪問件数
+                방문 건수
               </CardTitle>
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{analyticsData.totalVisits}</div>
               <p className="text-xs text-muted-foreground">
-                期間内の訪問総数
+                기간 내 총 방문 수
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                アクティブユーザー
+                활성 사용자
               </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{analyticsData.activeUsers}</div>
               <p className="text-xs text-muted-foreground">
-                日報を作成したユーザー
+                일일 보고를 작성한 사용자
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                平均訪問数
+                평균 방문 수
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {analyticsData.totalReports > 0 
+                {analyticsData.totalReports > 0
                   ? (analyticsData.totalVisits / analyticsData.totalReports).toFixed(1)
                   : '0'}
               </div>
               <p className="text-xs text-muted-foreground">
-                日報あたりの訪問数
+                일일 보고당 방문 수
               </p>
             </CardContent>
           </Card>
@@ -250,8 +250,8 @@ export default function AnalyticsPage() {
           {/* Daily Reports Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>日別日報作成数</CardTitle>
-              <CardDescription>期間内の日報作成推移</CardDescription>
+              <CardTitle>일별 일일 보고 작성 수</CardTitle>
+              <CardDescription>기간 내 일일 보고 작성 추이</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -261,11 +261,11 @@ export default function AnalyticsPage() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="count" 
-                    stroke="#8884d8" 
-                    name="日報数"
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#8884d8"
+                    name="보고 수"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -275,8 +275,8 @@ export default function AnalyticsPage() {
           {/* Top Customers Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>顧客別訪問数</CardTitle>
-              <CardDescription>訪問回数上位の顧客</CardDescription>
+              <CardTitle>고객별 방문 수</CardTitle>
+              <CardDescription>방문 횟수 상위 고객</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -286,7 +286,7 @@ export default function AnalyticsPage() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="visits" fill="#8884d8" name="訪問数" />
+                  <Bar dataKey="visits" fill="#8884d8" name="방문 수" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -295,8 +295,8 @@ export default function AnalyticsPage() {
           {/* User Activity Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>ユーザー別活動状況</CardTitle>
-              <CardDescription>営業担当者の日報作成数</CardDescription>
+              <CardTitle>사용자별 활동 현황</CardTitle>
+              <CardDescription>영업 담당자의 일일 보고 작성 수</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -306,7 +306,7 @@ export default function AnalyticsPage() {
                   <YAxis dataKey="user" type="category" />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="reports" fill="#82ca9d" name="日報数" />
+                  <Bar dataKey="reports" fill="#82ca9d" name="보고 수" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -315,8 +315,8 @@ export default function AnalyticsPage() {
           {/* Visit Distribution Pie Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>訪問先分布</CardTitle>
-              <CardDescription>顧客別訪問割合</CardDescription>
+              <CardTitle>방문처 분포</CardTitle>
+              <CardDescription>고객별 방문 비율</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>

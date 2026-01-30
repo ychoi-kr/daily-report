@@ -23,25 +23,25 @@ export default function NotFound() {
 
         {/* Title */}
         <h2 className="text-2xl font-semibold text-foreground mb-4">
-          ページが見つかりません
+          페이지를 찾을 수 없습니다
         </h2>
 
         {/* Description */}
         <p className="text-muted-foreground mb-8 leading-relaxed">
-          お探しのページは存在しないか、移動された可能性があります。
-          URLをご確認いただくか、ホームページからお探しください。
+          찾으시는 페이지가 존재하지 않거나 이동되었을 수 있습니다.
+          URL을 확인하시거나 홈페이지에서 찾아보세요.
         </p>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button onClick={() => window.history.back()} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            前のページへ戻る
+            이전 페이지로 돌아가기
           </Button>
           <Link href="/">
             <Button>
               <Home className="mr-2 h-4 w-4" />
-              ホームへ戻る
+              홈으로 돌아가기
             </Button>
           </Link>
         </div>
@@ -49,13 +49,13 @@ export default function NotFound() {
         {/* Additional help */}
         <div className="mt-12 pt-8 border-t border-border/50">
           <p className="text-sm text-muted-foreground">
-            問題が解決しない場合は
+            문제가 해결되지 않는 경우
           </p>
-          <Link 
-            href="/contact" 
+          <Link
+            href="/contact"
             className="text-sm text-primary hover:underline"
           >
-            システム管理者にお問い合わせください
+            시스템 관리자에게 문의하세요
           </Link>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import { ko } from 'date-fns/locale';
 import { Loader2, Save, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -35,25 +35,25 @@ export function ReportForm({
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
   const [isDirty, setIsDirty] = useState(false);
 
-  // フォームデータ
+  // 폼 데이터
   const [visitRecords, setVisitRecords] = useState<VisitRecordInput[]>(
     initialData?.visits || []
   );
   const [problem, setProblem] = useState(initialData?.problem || '');
   const [plan, setPlan] = useState(initialData?.plan || '');
 
-  // 自動保存用（オプション機能）
+  // 자동 저장용 (선택 기능)
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
 
-  // フォームの変更を検知
+  // 폼 변경 감지
   useEffect(() => {
     if (visitRecords.length > 0 || problem || plan) {
       setIsDirty(true);
     }
   }, [visitRecords, problem, plan]);
 
-  // 自動保存（下書き保存）- localStorage を使用
+  // 자동 저장 (임시 저장) - localStorage 사용
   useEffect(() => {
     if (!isDirty) return;
 
@@ -69,12 +69,12 @@ export function ReportForm({
       localStorage.setItem('report-draft', JSON.stringify(draft));
       setLastSaved(new Date());
       setIsAutoSaving(false);
-    }, 2000); // 2秒後に自動保存
+    }, 2000); // 2초 후 자동 저장
 
     return () => clearTimeout(saveTimeout);
   }, [visitRecords, problem, plan, reportDate, isDirty]);
 
-  // 下書き読み込み
+  // 임시 저장 불러오기
   useEffect(() => {
     if (initialData) return;
 
@@ -94,7 +94,7 @@ export function ReportForm({
     }
   }, [reportDate, initialData]);
 
-  // バリデーション
+  // 유효성 검사
   const validateForm = (): boolean => {
     try {
       const formData: CreateReportRequest = {
@@ -123,12 +123,12 @@ export function ReportForm({
     }
   };
 
-  // フォーム送信
+  // 폼 제출
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
-      setError('入力内容に誤りがあります。確認してください。');
+      setError('입력 내용에 오류가 있습니다. 확인해주세요.');
       return;
     }
 
@@ -163,34 +163,34 @@ export function ReportForm({
 
       if (!response.ok) {
         if (response.status === 409) {
-          throw new Error('同じ日付の日報が既に存在します');
+          throw new Error('같은 날짜의 일일 보고가 이미 존재합니다');
         } else if (response.status === 401) {
-          throw new Error('ログインが必要です');
+          throw new Error('로그인이 필요합니다');
         } else if (data.error?.message) {
           throw new Error(data.error.message);
         } else {
-          throw new Error('日報の作成に失敗しました');
+          throw new Error('일일 보고 작성에 실패했습니다');
         }
       }
 
-      // 成功時は下書きを削除
+      // 성공 시 임시 저장 삭제
       localStorage.removeItem('report-draft');
 
-      // 一覧画面へ遷移
+      // 목록 화면으로 이동
       router.push('/reports');
     } catch (error) {
       console.error('Report submission error:', error);
-      setError(error instanceof Error ? error.message : '日報の作成に失敗しました');
+      setError(error instanceof Error ? error.message : '일일 보고 작성에 실패했습니다');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // キャンセル処理
+  // 취소 처리
   const handleCancel = () => {
     if (isDirty) {
       const confirmed = window.confirm(
-        '編集中の内容が失われます。よろしいですか？'
+        '편집 중인 내용이 사라집니다. 계속하시겠습니까?'
       );
       if (!confirmed) return;
     }
@@ -202,7 +202,7 @@ export function ReportForm({
     }
   };
 
-  // 現在のユーザー情報を取得
+  // 현재 사용자 정보 가져오기
   const [userName, setUserName] = useState('');
   useEffect(() => {
     fetch('/api/auth/me')
@@ -213,28 +213,28 @@ export function ReportForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* ヘッダー情報 */}
+      {/* 헤더 정보 */}
       <Card>
         <CardHeader>
-          <CardTitle>日報作成</CardTitle>
+          <CardTitle>일일 보고 작성</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label>日付</Label>
+              <Label>날짜</Label>
               <p className="text-lg font-medium">
-                {format(new Date(reportDate), 'yyyy年M月d日(E)', { locale: ja })}
+                {format(new Date(reportDate), 'yyyy년 M월 d일(E)', { locale: ko })}
               </p>
             </div>
             <div>
-              <Label>作成者</Label>
-              <p className="text-lg font-medium">{userName || '読み込み中...'}</p>
+              <Label>작성자</Label>
+              <p className="text-lg font-medium">{userName || '로딩 중...'}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* エラー表示 */}
+      {/* 오류 표시 */}
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -242,28 +242,28 @@ export function ReportForm({
         </Alert>
       )}
 
-      {/* 訪問記録セクション */}
+      {/* 방문 기록 섹션 */}
       <VisitRecordForm
         visitRecords={visitRecords}
         onChange={setVisitRecords}
         errors={validationErrors}
       />
 
-      {/* 本日の課題・相談（Problem） */}
+      {/* 오늘의 과제/상담 (Problem) */}
       <Card>
         <CardHeader>
-          <CardTitle>本日の課題・相談（Problem）</CardTitle>
+          <CardTitle>오늘의 과제/상담 (Problem)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <Label htmlFor="problem">
-              課題・相談事項 <span className="text-red-500">*</span>
+              과제/상담 사항 <span className="text-red-500">*</span>
             </Label>
             <Textarea
               id="problem"
               value={problem}
               onChange={(e) => setProblem(e.target.value)}
-              placeholder="本日の課題や相談事項を入力してください（最大1000文字）"
+              placeholder="오늘의 과제나 상담 사항을 입력하세요 (최대 1000자)"
               maxLength={1000}
               rows={6}
               className="resize-none"
@@ -275,27 +275,27 @@ export function ReportForm({
                   <p className="text-sm text-red-500">{validationErrors.problem[0]}</p>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">{problem.length}/1000文字</p>
+              <p className="text-xs text-muted-foreground">{problem.length}/1000자</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* 明日の計画（Plan） */}
+      {/* 내일 계획 (Plan) */}
       <Card>
         <CardHeader>
-          <CardTitle>明日の計画（Plan）</CardTitle>
+          <CardTitle>내일 계획 (Plan)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <Label htmlFor="plan">
-              明日の活動計画 <span className="text-red-500">*</span>
+              내일 활동 계획 <span className="text-red-500">*</span>
             </Label>
             <Textarea
               id="plan"
               value={plan}
               onChange={(e) => setPlan(e.target.value)}
-              placeholder="明日の活動計画を入力してください（最大1000文字）"
+              placeholder="내일 활동 계획을 입력하세요 (최대 1000자)"
               maxLength={1000}
               rows={6}
               className="resize-none"
@@ -307,26 +307,26 @@ export function ReportForm({
                   <p className="text-sm text-red-500">{validationErrors.plan[0]}</p>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">{plan.length}/1000文字</p>
+              <p className="text-xs text-muted-foreground">{plan.length}/1000자</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* 自動保存状態 */}
+      {/* 자동 저장 상태 */}
       {lastSaved && (
         <div className="text-sm text-muted-foreground text-center">
           {isAutoSaving ? (
-            <span>保存中...</span>
+            <span>저장 중...</span>
           ) : (
             <span>
-              最終保存: {format(lastSaved, 'HH:mm:ss', { locale: ja })}
+              마지막 저장: {format(lastSaved, 'HH:mm:ss', { locale: ko })}
             </span>
           )}
         </div>
       )}
 
-      {/* アクションボタン */}
+      {/* 액션 버튼 */}
       <div className="flex justify-end gap-4">
         <Button
           type="button"
@@ -335,18 +335,18 @@ export function ReportForm({
           disabled={isSubmitting}
         >
           <X className="mr-2 h-4 w-4" />
-          キャンセル
+          취소
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              保存中...
+              저장 중...
             </>
           ) : (
             <>
               <Save className="mr-2 h-4 w-4" />
-              保存
+              저장
             </>
           )}
         </Button>

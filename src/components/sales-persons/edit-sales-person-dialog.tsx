@@ -59,7 +59,7 @@ export function EditSalesPersonDialog({
     },
   });
 
-  // salesPersonが変更されたらフォームを更新
+  // salesPerson이 변경되면 폼 업데이트
   useEffect(() => {
     if (salesPerson) {
       form.reset({
@@ -86,13 +86,13 @@ export function EditSalesPersonDialog({
 
       if (!response.ok) {
         throw new Error(
-          responseData.error?.message || '営業担当者の更新に失敗しました'
+          responseData.error?.message || '영업 담당자 업데이트에 실패했습니다'
         );
       }
 
       toast({
-        title: '成功',
-        description: '営業担当者の情報を更新しました',
+        title: '성공',
+        description: '영업 담당자 정보를 업데이트했습니다',
       });
 
       onOpenChange(false);
@@ -100,11 +100,11 @@ export function EditSalesPersonDialog({
     } catch (error) {
       console.error('Error updating sales person:', error);
       toast({
-        title: 'エラー',
+        title: '오류',
         description:
           error instanceof Error
             ? error.message
-            : '営業担当者の更新に失敗しました',
+            : '영업 담당자 업데이트에 실패했습니다',
         variant: 'destructive',
       });
     } finally {
@@ -112,9 +112,9 @@ export function EditSalesPersonDialog({
     }
   };
 
-  // 作成日時のフォーマット
+  // 작성일시 포맷
   const formatDate = (dateString: string | Date) => {
-    return new Date(dateString).toLocaleDateString('ja-JP', {
+    return new Date(dateString).toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -125,28 +125,28 @@ export function EditSalesPersonDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>営業担当者の編集</DialogTitle>
+          <DialogTitle>영업 담당자 편집</DialogTitle>
           <DialogDescription>
-            {salesPerson.name}の情報を編集します。
+            {salesPerson.name}의 정보를 편집합니다.
           </DialogDescription>
         </DialogHeader>
 
-        {/* アカウント情報表示 */}
+        {/* 계정 정보 표시 */}
         <div className="rounded-lg border p-4 space-y-2 bg-muted/50">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">アカウント情報</span>
+            <span className="text-sm font-medium">계정 정보</span>
             {salesPerson.is_active ? (
               <Badge variant="outline" className="text-green-600">
-                有効
+                활성
               </Badge>
             ) : (
-              <Badge variant="destructive">無効</Badge>
+              <Badge variant="destructive">비활성</Badge>
             )}
           </div>
           {salesPerson.created_at && (
             <div className="flex items-center text-sm text-muted-foreground">
               <Calendar className="mr-1 h-3 w-3" />
-              作成日: {formatDate(salesPerson.created_at)}
+              생성일: {formatDate(salesPerson.created_at)}
             </div>
           )}
           <div className="text-xs text-muted-foreground">
@@ -161,9 +161,9 @@ export function EditSalesPersonDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>氏名 *</FormLabel>
+                  <FormLabel>이름 *</FormLabel>
                   <FormControl>
-                    <Input placeholder="山田太郎" {...field} />
+                    <Input placeholder="홍길동" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,16 +175,16 @@ export function EditSalesPersonDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>メールアドレス *</FormLabel>
+                  <FormLabel>이메일 *</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="yamada@example.com"
+                      placeholder="example@company.com"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    ログイン時に使用するメールアドレス
+                    로그인 시 사용할 이메일 주소
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -196,9 +196,9 @@ export function EditSalesPersonDialog({
               name="department"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>部署</FormLabel>
+                  <FormLabel>부서</FormLabel>
                   <FormControl>
-                    <Input placeholder="営業1課" {...field} />
+                    <Input placeholder="영업1팀" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -217,9 +217,9 @@ export function EditSalesPersonDialog({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>管理者権限を付与</FormLabel>
+                    <FormLabel>관리자 권한 부여</FormLabel>
                     <FormDescription>
-                      管理者は他の営業担当者の日報にコメントできます
+                      관리자는 다른 영업 담당자의 일일 보고에 코멘트할 수 있습니다
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -238,9 +238,9 @@ export function EditSalesPersonDialog({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>アカウント有効</FormLabel>
+                    <FormLabel>계정 활성화</FormLabel>
                     <FormDescription>
-                      無効にするとログインできなくなります
+                      비활성화하면 로그인할 수 없게 됩니다
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -254,13 +254,13 @@ export function EditSalesPersonDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                キャンセル
+                취소
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                更新
+                업데이트
               </Button>
             </DialogFooter>
           </form>

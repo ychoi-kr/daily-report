@@ -41,14 +41,14 @@ export default function Error({
 
         {/* Title */}
         <h2 className="text-2xl font-semibold text-foreground mb-4">
-          エラーが発生しました
+          오류가 발생했습니다
         </h2>
 
         {/* Description */}
         <p className="text-muted-foreground mb-8 leading-relaxed">
-          申し訳ございません。予期しないエラーが発生しました。
-          しばらく時間をおいてから再度お試しいただくか、
-          問題が解決しない場合はシステム管理者にお問い合わせください。
+          죄송합니다. 예기치 않은 오류가 발생했습니다.
+          잠시 후 다시 시도해 주시거나,
+          문제가 해결되지 않는 경우 시스템 관리자에게 문의하세요.
         </p>
 
         {/* Error details in development */}
@@ -56,7 +56,7 @@ export default function Error({
           <Alert variant="destructive" className="mb-6 text-left">
             <Bug className="h-4 w-4" />
             <AlertDescription className="mt-2">
-              <p className="font-semibold mb-1">開発環境エラー詳細:</p>
+              <p className="font-semibold mb-1">개발 환경 오류 상세:</p>
               <p className="text-sm font-mono break-all">{error.message}</p>
               {error.digest && (
                 <p className="text-xs mt-2 text-muted-foreground">
@@ -71,12 +71,12 @@ export default function Error({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button onClick={reset} variant="default">
             <RefreshCw className="mr-2 h-4 w-4" />
-            もう一度試す
+            다시 시도
           </Button>
           <Link href="/">
             <Button variant="outline">
               <Home className="mr-2 h-4 w-4" />
-              ホームへ戻る
+              홈으로 돌아가기
             </Button>
           </Link>
         </div>
@@ -85,7 +85,7 @@ export default function Error({
         {error.digest && (
           <div className="mt-12 pt-8 border-t border-border/50">
             <p className="text-sm text-muted-foreground mb-2">
-              サポートへお問い合わせの際は、以下のエラーIDをお伝えください：
+              지원팀에 문의 시 아래 오류 ID를 알려주세요:
             </p>
             <code className="text-xs bg-muted px-2 py-1 rounded">
               {error.digest}

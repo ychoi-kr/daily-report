@@ -16,7 +16,7 @@ export function VisitRecordList({ visits, isLoading }: VisitRecordListProps) {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Building2 className="h-5 w-5" />
-          訪問記録
+          방문 기록
         </h3>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
@@ -43,9 +43,9 @@ export function VisitRecordList({ visits, isLoading }: VisitRecordListProps) {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Building2 className="h-5 w-5" />
-          訪問記録
+          방문 기록
         </h3>
-        <p className="text-muted-foreground">訪問記録がありません</p>
+        <p className="text-muted-foreground">방문 기록이 없습니다</p>
       </div>
     );
   }
@@ -54,7 +54,7 @@ export function VisitRecordList({ visits, isLoading }: VisitRecordListProps) {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold flex items-center gap-2">
         <Building2 className="h-5 w-5" />
-        訪問記録
+        방문 기록
       </h3>
       <div className="space-y-3">
         {visits.map((visit, index) => (
@@ -67,11 +67,11 @@ export function VisitRecordList({ visits, isLoading }: VisitRecordListProps) {
                       {index + 1}.
                     </span>
                     <span className="font-semibold">
-                      {visit.customer?.company_name || `顧客ID: ${visit.customer_id}`}
+                      {visit.customer?.company_name || `고객ID: ${visit.customer_id}`}
                     </span>
                     {visit.customer?.contact_person && (
                       <span className="text-sm text-muted-foreground ml-2">
-                        ({visit.customer.contact_person}様)
+                        ({visit.customer.contact_person}님)
                       </span>
                     )}
                   </div>

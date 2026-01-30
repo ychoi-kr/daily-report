@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameMonth, isToday, isSameDay } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
 interface Report {
@@ -27,7 +27,7 @@ interface ReportCalendarProps {
   isLoading?: boolean;
 }
 
-const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 export const ReportCalendar: React.FC<ReportCalendarProps> = ({
   initialDate = new Date(),
@@ -43,13 +43,13 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
   const monthEnd = endOfMonth(currentDate);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // 月の最初の日の曜日を取得
+  // 월 첫째 날의 요일 가져오기
   const startDayOfWeek = getDay(monthStart);
 
-  // カレンダーの空白セルを計算
+  // 캘린더 빈 셀 계산
   const emptyCells = Array(startDayOfWeek).fill(null);
 
-  // 日付ごとの日報をグループ化
+  // 날짜별 일일 보고 그룹화
   const reportsByDate = React.useMemo(() => {
     const grouped: { [key: string]: Report[] } = {};
     reports.forEach(report => {
@@ -80,13 +80,13 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
     const dayReports = reportsByDate[dateStr] || [];
     
     if (dayReports.length === 1) {
-      // 1件の場合は詳細ページへ
+      // 1건인 경우 상세 페이지로
       router.push(`/reports/${dayReports[0].id}`);
     } else if (dayReports.length > 1) {
-      // 複数件の場合は一覧ページへ（日付でフィルタ）
+      // 여러 건인 경우 목록 페이지로 (날짜 필터)
       router.push(`/reports?date=${dateStr}`);
     } else {
-      // 0件の場合は新規作成ページへ
+      // 0건인 경우 신규 작성 페이지로
       router.push(`/reports/new?date=${dateStr}`);
     }
   };
@@ -113,13 +113,13 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
             ))}
             {dayReports.length > 2 && (
               <div className="text-xs text-muted-foreground">
-                他 {dayReports.length - 2} 件
+                외 {dayReports.length - 2}건
               </div>
             )}
           </div>
         ) : (
           <div className="text-xs text-muted-foreground">
-            日報なし
+            보고 없음
           </div>
         )}
       </div>
@@ -131,7 +131,7 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-bold">
-            {format(currentDate, 'yyyy年 M月', { locale: ja })}
+            {format(currentDate, 'yyyy년 M월', { locale: ko })}
           </CardTitle>
           <div className="flex gap-2">
             <Button
@@ -154,7 +154,7 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        {/* 曜日ヘッダー */}
+        {/* 요일 헤더 */}
         <div className="grid grid-cols-7 gap-px bg-muted/50 rounded-t-lg overflow-hidden">
           {WEEKDAYS.map((day, index) => (
             <div
@@ -170,9 +170,9 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
           ))}
         </div>
 
-        {/* カレンダー本体 */}
+        {/* 캘린더 본체 */}
         <div className="grid grid-cols-7 gap-px bg-muted/50 rounded-b-lg overflow-hidden">
-          {/* 空白セル */}
+          {/* 빈 셀 */}
           {emptyCells.map((_, index) => (
             <div
               key={`empty-${index}`}
@@ -180,7 +180,7 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
             />
           ))}
 
-          {/* 日付セル */}
+          {/* 날짜 셀 */}
           {days.map((date) => {
             const dateStr = format(date, 'yyyy-MM-dd');
             const dayReports = reportsByDate[dateStr] || [];
@@ -205,15 +205,15 @@ export const ReportCalendar: React.FC<ReportCalendarProps> = ({
           })}
         </div>
 
-        {/* 凡例 */}
+        {/* 범례 */}
         <div className="mt-4 flex items-center justify-end gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-primary/10 rounded" />
-            <span>日報あり</span>
+            <span>보고 있음</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-primary/5 ring-1 ring-primary rounded" />
-            <span>今日</span>
+            <span>오늘</span>
           </div>
         </div>
       </CardContent>

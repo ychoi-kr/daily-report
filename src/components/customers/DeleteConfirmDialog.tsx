@@ -41,23 +41,23 @@ export function DeleteConfirmDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>顧客情報の削除</AlertDialogTitle>
+          <AlertDialogTitle>고객 정보 삭제</AlertDialogTitle>
           <AlertDialogDescription>
-            「{customerName}」を削除してもよろしいですか？
+            &quot;{customerName}&quot;을(를) 삭제하시겠습니까?
             <br />
-            この操作は取り消すことができません。
+            이 작업은 취소할 수 없습니다.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>
-            キャンセル
+            취소
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? '削除中...' : '削除'}
+            {isDeleting ? '삭제 중...' : '삭제'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

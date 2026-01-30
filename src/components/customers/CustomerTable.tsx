@@ -43,10 +43,10 @@ export function CustomerTable({
         <div className="flex h-[400px] items-center justify-center">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              顧客データが見つかりません
+              고객 데이터를 찾을 수 없습니다
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              新規登録ボタンから顧客を追加してください
+              신규 등록 버튼에서 고객을 추가하세요
             </p>
           </div>
         </div>
@@ -60,12 +60,12 @@ export function CustomerTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>会社名</TableHead>
-              <TableHead>担当者名</TableHead>
-              <TableHead>電話番号</TableHead>
-              <TableHead>メールアドレス</TableHead>
-              <TableHead>住所</TableHead>
-              <TableHead className="text-right">操作</TableHead>
+              <TableHead>회사명</TableHead>
+              <TableHead>담당자명</TableHead>
+              <TableHead>전화번호</TableHead>
+              <TableHead>이메일</TableHead>
+              <TableHead>주소</TableHead>
+              <TableHead className="text-right">작업</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -88,7 +88,7 @@ export function CustomerTable({
                       onClick={() => onEdit(customer)}
                     >
                       <Pencil className="h-4 w-4" />
-                      <span className="sr-only">編集</span>
+                      <span className="sr-only">편집</span>
                     </Button>
                     <Button
                       variant="ghost"
@@ -96,7 +96,7 @@ export function CustomerTable({
                       onClick={() => onDelete(customer)}
                     >
                       <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">削除</span>
+                      <span className="sr-only">삭제</span>
                     </Button>
                   </div>
                 </TableCell>
@@ -109,7 +109,7 @@ export function CustomerTable({
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          ページ {currentPage} / {totalPages}
+          페이지 {currentPage} / {totalPages}
         </p>
         <div className="flex gap-2">
           <Button
@@ -119,7 +119,7 @@ export function CustomerTable({
             disabled={currentPage === 1}
           >
             <ChevronLeft className="h-4 w-4" />
-            前へ
+            이전
           </Button>
           <Button
             variant="outline"
@@ -127,7 +127,7 @@ export function CustomerTable({
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            次へ
+            다음
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -142,12 +142,12 @@ function CustomerTableSkeleton() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>会社名</TableHead>
-            <TableHead>担当者名</TableHead>
-            <TableHead>電話番号</TableHead>
-            <TableHead>メールアドレス</TableHead>
-            <TableHead>住所</TableHead>
-            <TableHead className="text-right">操作</TableHead>
+            <TableHead>회사명</TableHead>
+            <TableHead>담당자명</TableHead>
+            <TableHead>전화번호</TableHead>
+            <TableHead>이메일</TableHead>
+            <TableHead>주소</TableHead>
+            <TableHead className="text-right">작업</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

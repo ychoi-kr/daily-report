@@ -50,24 +50,24 @@ export default function SalesPersonsPage() {
   const { user, isManager, isAuthenticated, logout } = useAuth();
   const router = useRouter();
 
-  // 権限チェック: 管理者でない場合はリダイレクト
+  // 권한 확인: 관리자가 아닌 경우 리다이렉트
   useEffect(() => {
-    // 認証情報の読み込み中は何もしない
+    // 인증 정보 로딩 중에는 아무것도 하지 않음
     if (!user) return;
-    
+
     if (!isAuthenticated) {
       router.push('/login');
     } else if (!isManager) {
       toast({
-        title: 'アクセス拒否',
-        description: 'この機能へのアクセス権限がありません',
+        title: '접근 거부',
+        description: '이 기능에 대한 접근 권한이 없습니다',
         variant: 'destructive',
       });
       router.push('/dashboard');
     }
   }, [user, isAuthenticated, isManager, router, toast]);
 
-  // 営業担当者一覧を取得
+  // 영업 담당자 목록 가져오기
   const fetchSalesPersons = async () => {
     try {
       setLoading(true);
@@ -76,7 +76,7 @@ export default function SalesPersonsPage() {
 
       if (!response.ok) {
         throw new Error(
-          data.error?.message || '営業担当者の取得に失敗しました'
+          data.error?.message || '영업 담당자를 가져오는 데 실패했습니다'
         );
       }
 
@@ -84,11 +84,11 @@ export default function SalesPersonsPage() {
     } catch (error) {
       console.error('Error fetching sales persons:', error);
       toast({
-        title: 'エラー',
+        title: '오류',
         description:
           error instanceof Error
             ? error.message
-            : '営業担当者の取得に失敗しました',
+            : '영업 담당자를 가져오는 데 실패했습니다',
         variant: 'destructive',
       });
     } finally {
@@ -100,7 +100,7 @@ export default function SalesPersonsPage() {
     fetchSalesPersons();
   }, []);
 
-  // 検索フィルタリング
+  // 검색 필터링
   const filteredSalesPersons = salesPersons?.filter(
     (person) =>
       person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,7 +108,7 @@ export default function SalesPersonsPage() {
       person.department.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  // アカウントの有効/無効を切り替え
+  // 계정 활성/비활성 전환
   const toggleAccountStatus = async (
     person: SalesPerson,
     isActive: boolean
@@ -124,30 +124,30 @@ export default function SalesPersonsPage() {
 
       if (!response.ok) {
         throw new Error(
-          data.error?.message || 'アカウント状態の変更に失敗しました'
+          data.error?.message || '계정 상태 변경에 실패했습니다'
         );
       }
 
       toast({
-        title: '成功',
-        description: `${person.name}のアカウントを${isActive ? '有効' : '無効'}にしました`,
+        title: '성공',
+        description: `${person.name}의 계정을 ${isActive ? '활성화' : '비활성화'}했습니다`,
       });
 
       await fetchSalesPersons();
     } catch (error) {
       console.error('Error toggling account status:', error);
       toast({
-        title: 'エラー',
+        title: '오류',
         description:
           error instanceof Error
             ? error.message
-            : 'アカウント状態の変更に失敗しました',
+            : '계정 상태 변경에 실패했습니다',
         variant: 'destructive',
       });
     }
   };
 
-  // 管理者でない場合は何も表示しない
+  // 관리자가 아닌 경우 아무것도 표시하지 않음
   if (!isManager) {
     return null;
   }
@@ -160,9 +160,9 @@ export default function SalesPersonsPage() {
     >
       <div className="space-y-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">営業担当者管理</h1>
+          <h1 className="text-3xl font-bold mb-2">영업 담당자 관리</h1>
           <p className="text-gray-600">
-            営業担当者の登録・編集・権限管理を行います
+            영업 담당자 등록/편집/권한 관리를 수행합니다
           </p>
         </div>
 
@@ -170,7 +170,7 @@ export default function SalesPersonsPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="氏名、メール、部署で検索..."
+            placeholder="이름, 이메일, 부서로 검색..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-8"
@@ -178,7 +178,7 @@ export default function SalesPersonsPage() {
         </div>
         <Button onClick={() => setIsNewDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          新規登録
+          신규 등록
         </Button>
       </div>
 
@@ -186,17 +186,17 @@ export default function SalesPersonsPage() {
         <Table>
           <TableCaption>
             {loading
-              ? '読み込み中...'
-              : `${filteredSalesPersons.length}名の営業担当者`}
+              ? '로딩 중...'
+              : `${filteredSalesPersons.length}명의 영업 담당자`}
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>氏名</TableHead>
-              <TableHead>メールアドレス</TableHead>
-              <TableHead>部署</TableHead>
-              <TableHead>権限</TableHead>
-              <TableHead>ステータス</TableHead>
-              <TableHead className="text-right">操作</TableHead>
+              <TableHead>이름</TableHead>
+              <TableHead>이메일</TableHead>
+              <TableHead>부서</TableHead>
+              <TableHead>권한</TableHead>
+              <TableHead>상태</TableHead>
+              <TableHead className="text-right">작업</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -207,42 +207,42 @@ export default function SalesPersonsPage() {
                 <TableCell>{person.department}</TableCell>
                 <TableCell>
                   {person.is_manager ? (
-                    <Badge variant="default">管理者</Badge>
+                    <Badge variant="default">관리자</Badge>
                   ) : (
-                    <Badge variant="secondary">一般</Badge>
+                    <Badge variant="secondary">일반</Badge>
                   )}
                 </TableCell>
                 <TableCell>
                   {person.is_active ? (
                     <Badge variant="outline" className="text-green-600">
-                      有効
+                      활성
                     </Badge>
                   ) : (
-                    <Badge variant="destructive">無効</Badge>
+                    <Badge variant="destructive">비활성</Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">メニューを開く</span>
+                        <span className="sr-only">메뉴 열기</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>操作</DropdownMenuLabel>
+                      <DropdownMenuLabel>작업</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => setEditingPerson(person)}
                       >
                         <Edit className="mr-2 h-4 w-4" />
-                        編集
+                        편집
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => setResetPasswordPerson(person)}
                       >
                         <Key className="mr-2 h-4 w-4" />
-                        パスワードリセット
+                        비밀번호 재설정
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -251,7 +251,7 @@ export default function SalesPersonsPage() {
                         }
                       >
                         <UserX className="mr-2 h-4 w-4" />
-                        {person.is_active ? 'アカウント無効化' : 'アカウント有効化'}
+                        {person.is_active ? '계정 비활성화' : '계정 활성화'}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -261,7 +261,7 @@ export default function SalesPersonsPage() {
             {filteredSalesPersons.length === 0 && !loading && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-gray-500">
-                  営業担当者が見つかりません
+                  영업 담당자를 찾을 수 없습니다
                 </TableCell>
               </TableRow>
             )}
@@ -269,7 +269,7 @@ export default function SalesPersonsPage() {
         </Table>
       </div>
 
-      {/* ダイアログコンポーネント */}
+      {/* 다이얼로그 컴포넌트 */}
       <NewSalesPersonDialog
         open={isNewDialogOpen}
         onOpenChange={setIsNewDialogOpen}

@@ -81,21 +81,21 @@ export const ReportSearchForm: React.FC<ReportSearchFormProps> = ({
             {/* Date Range */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="start-date">開始日</Label>
+                <Label htmlFor="start-date">시작일</Label>
                 <DatePicker
                   date={startDate}
                   onDateChange={setStartDate}
-                  placeholder="開始日を選択"
+                  placeholder="시작일 선택"
                   maxDate={endDate || new Date()}
                 />
               </div>
-              <div className="hidden sm:block text-muted-foreground">〜</div>
+              <div className="hidden sm:block text-muted-foreground">~</div>
               <div className="space-y-2">
-                <Label htmlFor="end-date">終了日</Label>
+                <Label htmlFor="end-date">종료일</Label>
                 <DatePicker
                   date={endDate}
                   onDateChange={setEndDate}
-                  placeholder="終了日を選択"
+                  placeholder="종료일 선택"
                   minDate={startDate}
                   maxDate={new Date()}
                 />
@@ -105,17 +105,17 @@ export const ReportSearchForm: React.FC<ReportSearchFormProps> = ({
             {/* Sales Person Selector (Only for managers) */}
             {isManager && (
               <div className="space-y-2 min-w-[200px]">
-                <Label htmlFor="sales-person">営業担当者</Label>
+                <Label htmlFor="sales-person">영업 담당자</Label>
                 <Select
                   value={selectedSalesPersonId}
                   onValueChange={setSelectedSalesPersonId}
                   disabled={isLoading || salesPersons.length === 0}
                 >
                   <SelectTrigger id="sales-person">
-                    <SelectValue placeholder="選択してください" />
+                    <SelectValue placeholder="선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">全員</SelectItem>
+                    <SelectItem value="all">전체</SelectItem>
                     {salesPersons.map((person) => (
                       <SelectItem key={person.id} value={person.id.toString()}>
                         {person.name}
@@ -135,7 +135,7 @@ export const ReportSearchForm: React.FC<ReportSearchFormProps> = ({
                 className="gap-2"
               >
                 <RotateCcw className="h-4 w-4" />
-                リセット
+                초기화
               </Button>
               <Button
                 onClick={handleSearch}
@@ -143,7 +143,7 @@ export const ReportSearchForm: React.FC<ReportSearchFormProps> = ({
                 className="gap-2"
               >
                 <Search className="h-4 w-4" />
-                検索
+                검색
               </Button>
             </div>
           </div>

@@ -70,13 +70,13 @@ export function NewSalesPersonDialog({
 
       if (!response.ok) {
         throw new Error(
-          responseData.error?.message || '営業担当者の登録に失敗しました'
+          responseData.error?.message || '영업 담당자 등록에 실패했습니다'
         );
       }
 
       toast({
-        title: '成功',
-        description: '営業担当者を登録しました',
+        title: '성공',
+        description: '영업 담당자를 등록했습니다',
       });
 
       form.reset();
@@ -85,11 +85,11 @@ export function NewSalesPersonDialog({
     } catch (error) {
       console.error('Error creating sales person:', error);
       toast({
-        title: 'エラー',
+        title: '오류',
         description:
           error instanceof Error
             ? error.message
-            : '営業担当者の登録に失敗しました',
+            : '영업 담당자 등록에 실패했습니다',
         variant: 'destructive',
       });
     } finally {
@@ -101,9 +101,9 @@ export function NewSalesPersonDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>営業担当者の新規登録</DialogTitle>
+          <DialogTitle>영업 담당자 신규 등록</DialogTitle>
           <DialogDescription>
-            新しい営業担当者のアカウントを作成します。
+            새로운 영업 담당자 계정을 생성합니다.
           </DialogDescription>
         </DialogHeader>
 
@@ -114,9 +114,9 @@ export function NewSalesPersonDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>氏名 *</FormLabel>
+                  <FormLabel>이름 *</FormLabel>
                   <FormControl>
-                    <Input placeholder="山田太郎" {...field} />
+                    <Input placeholder="홍길동" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,16 +128,16 @@ export function NewSalesPersonDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>メールアドレス *</FormLabel>
+                  <FormLabel>이메일 *</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="yamada@example.com"
+                      placeholder="example@company.com"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    ログイン時に使用するメールアドレス
+                    로그인 시 사용할 이메일 주소
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -149,12 +149,12 @@ export function NewSalesPersonDialog({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>パスワード *</FormLabel>
+                  <FormLabel>비밀번호 *</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
                   <FormDescription>
-                    8文字以上、大文字・小文字・数字を含む
+                    8자 이상, 대문자/소문자/숫자 포함
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -166,9 +166,9 @@ export function NewSalesPersonDialog({
               name="department"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>部署</FormLabel>
+                  <FormLabel>부서</FormLabel>
                   <FormControl>
-                    <Input placeholder="営業1課" {...field} />
+                    <Input placeholder="영업1팀" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -187,9 +187,9 @@ export function NewSalesPersonDialog({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>管理者権限を付与</FormLabel>
+                    <FormLabel>관리자 권한 부여</FormLabel>
                     <FormDescription>
-                      管理者は他の営業担当者の日報にコメントできます
+                      관리자는 다른 영업 담당자의 일일 보고에 코멘트할 수 있습니다
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -203,13 +203,13 @@ export function NewSalesPersonDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                キャンセル
+                취소
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                登録
+                등록
               </Button>
             </DialogFooter>
           </form>

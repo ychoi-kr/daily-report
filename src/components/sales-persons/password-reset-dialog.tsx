@@ -72,13 +72,13 @@ export function PasswordResetDialog({
 
       if (!response.ok) {
         throw new Error(
-          responseData.error?.message || 'パスワードのリセットに失敗しました'
+          responseData.error?.message || '비밀번호 재설정에 실패했습니다'
         );
       }
 
       toast({
-        title: '成功',
-        description: `${salesPerson.name}のパスワードをリセットしました`,
+        title: '성공',
+        description: `${salesPerson.name}의 비밀번호를 재설정했습니다`,
       });
 
       form.reset();
@@ -86,11 +86,11 @@ export function PasswordResetDialog({
     } catch (error) {
       console.error('Error resetting password:', error);
       toast({
-        title: 'エラー',
+        title: '오류',
         description:
           error instanceof Error
             ? error.message
-            : 'パスワードのリセットに失敗しました',
+            : '비밀번호 재설정에 실패했습니다',
         variant: 'destructive',
       });
     } finally {
@@ -104,35 +104,35 @@ export function PasswordResetDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center">
             <Key className="mr-2 h-5 w-5" />
-            パスワードリセット
+            비밀번호 재설정
           </DialogTitle>
           <DialogDescription>
-            {salesPerson.name}のパスワードを新しく設定します。
+            {salesPerson.name}의 비밀번호를 새로 설정합니다.
           </DialogDescription>
         </DialogHeader>
 
         <Alert className="border-orange-200 bg-orange-50">
           <AlertTriangle className="h-4 w-4 text-orange-600" />
           <AlertDescription className="text-orange-800">
-            パスワードをリセットすると、対象ユーザーは新しいパスワードでのみログインできるようになります。
-            必ず安全な方法でパスワードを共有してください。
+            비밀번호를 재설정하면 해당 사용자는 새 비밀번호로만 로그인할 수 있게 됩니다.
+            반드시 안전한 방법으로 비밀번호를 공유하세요.
           </AlertDescription>
         </Alert>
 
-        {/* 対象ユーザー情報 */}
+        {/* 대상 사용자 정보 */}
         <div className="rounded-lg border p-4 bg-muted/50">
           <div className="flex items-center justify-between mb-2">
-            <span className="font-medium">対象ユーザー</span>
+            <span className="font-medium">대상 사용자</span>
           </div>
           <div className="space-y-1 text-sm">
             <div>
-              <strong>氏名:</strong> {salesPerson.name}
+              <strong>이름:</strong> {salesPerson.name}
             </div>
             <div>
-              <strong>メール:</strong> {salesPerson.email}
+              <strong>이메일:</strong> {salesPerson.email}
             </div>
             <div>
-              <strong>部署:</strong> {salesPerson.department}
+              <strong>부서:</strong> {salesPerson.department}
             </div>
           </div>
         </div>
@@ -144,7 +144,7 @@ export function PasswordResetDialog({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>新しいパスワード *</FormLabel>
+                  <FormLabel>새 비밀번호 *</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -166,14 +166,14 @@ export function PasswordResetDialog({
                         )}
                         <span className="sr-only">
                           {showPassword
-                            ? 'パスワードを非表示'
-                            : 'パスワードを表示'}
+                            ? '비밀번호 숨기기'
+                            : '비밀번호 표시'}
                         </span>
                       </Button>
                     </div>
                   </FormControl>
                   <FormDescription>
-                    8文字以上、大文字・小文字・数字を含む
+                    8자 이상, 대문자/소문자/숫자 포함
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -185,7 +185,7 @@ export function PasswordResetDialog({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>パスワード確認 *</FormLabel>
+                  <FormLabel>비밀번호 확인 *</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -209,14 +209,14 @@ export function PasswordResetDialog({
                         )}
                         <span className="sr-only">
                           {showConfirmPassword
-                            ? 'パスワードを非表示'
-                            : 'パスワードを表示'}
+                            ? '비밀번호 숨기기'
+                            : '비밀번호 표시'}
                         </span>
                       </Button>
                     </div>
                   </FormControl>
                   <FormDescription>
-                    確認のため同じパスワードを入力してください
+                    확인을 위해 동일한 비밀번호를 입력하세요
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -230,7 +230,7 @@ export function PasswordResetDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                キャンセル
+                취소
               </Button>
               <Button
                 type="submit"
@@ -240,7 +240,7 @@ export function PasswordResetDialog({
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                パスワードリセット
+                비밀번호 재설정
               </Button>
             </DialogFooter>
           </form>

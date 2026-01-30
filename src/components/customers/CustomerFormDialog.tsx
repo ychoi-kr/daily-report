@@ -100,12 +100,12 @@ export function CustomerFormDialog({
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>
-            {mode === 'create' ? '顧客新規登録' : '顧客情報編集'}
+            {mode === 'create' ? '고객 신규 등록' : '고객 정보 편집'}
           </DialogTitle>
           <DialogDescription>
-            {mode === 'create' 
-              ? '新しい顧客情報を登録します。必須項目を入力してください。'
-              : '顧客情報を編集します。必要な項目を修正してください。'}
+            {mode === 'create'
+              ? '새로운 고객 정보를 등록합니다. 필수 항목을 입력하세요.'
+              : '고객 정보를 편집합니다. 필요한 항목을 수정하세요.'}
           </DialogDescription>
         </DialogHeader>
         
@@ -116,9 +116,9 @@ export function CustomerFormDialog({
               name="company_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>会社名 *</FormLabel>
+                  <FormLabel>회사명 *</FormLabel>
                   <FormControl>
-                    <Input placeholder="ABC商事" {...field} />
+                    <Input placeholder="ABC상사" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,9 +130,9 @@ export function CustomerFormDialog({
               name="contact_person"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>担当者名 *</FormLabel>
+                  <FormLabel>담당자명 *</FormLabel>
                   <FormControl>
-                    <Input placeholder="山田太郎" {...field} />
+                    <Input placeholder="홍길동" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,9 +144,9 @@ export function CustomerFormDialog({
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>電話番号 *</FormLabel>
+                  <FormLabel>전화번호 *</FormLabel>
                   <FormControl>
-                    <Input placeholder="03-1234-5678" {...field} />
+                    <Input placeholder="02-1234-5678" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -158,7 +158,7 @@ export function CustomerFormDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>メールアドレス *</FormLabel>
+                  <FormLabel>이메일 *</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="example@company.com" {...field} />
                   </FormControl>
@@ -172,10 +172,10 @@ export function CustomerFormDialog({
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>住所</FormLabel>
+                  <FormLabel>주소</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="東京都千代田区..."
+                    <Textarea
+                      placeholder="서울특별시 강남구..."
                       className="resize-none"
                       rows={3}
                       {...field}
@@ -193,10 +193,10 @@ export function CustomerFormDialog({
                 onClick={() => handleOpenChange(false)}
                 disabled={isSubmitting}
               >
-                キャンセル
+                취소
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? '処理中...' : (mode === 'create' ? '登録' : '更新')}
+                {isSubmitting ? '처리 중...' : (mode === 'create' ? '등록' : '업데이트')}
               </Button>
             </DialogFooter>
           </form>

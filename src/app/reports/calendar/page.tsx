@@ -39,10 +39,10 @@ export default function ReportCalendarPage() {
       const params = new URLSearchParams({
         start_date: startDate,
         end_date: endDate,
-        per_page: '100', // カレンダー表示のため多めに取得
+        per_page: '100', // 캘린더 표시를 위해 많이 가져옴
       });
 
-      // 管理者でない場合は自分の日報のみ取得
+      // 관리자가 아닌 경우 자신의 보고만 가져옴
       if (!isManager && user?.id) {
         params.append('sales_person_id', user.id.toString());
       }
@@ -52,7 +52,7 @@ export default function ReportCalendarPage() {
       });
 
       if (!response.ok) {
-        throw new Error('日報の取得に失敗しました');
+        throw new Error('일일 보고를 가져오는 데 실패했습니다');
       }
 
       const data = await response.json();
@@ -60,8 +60,8 @@ export default function ReportCalendarPage() {
     } catch (error) {
       console.error('Error fetching reports:', error);
       toast({
-        title: 'エラー',
-        description: '日報の取得に失敗しました',
+        title: '오류',
+        description: '일일 보고를 가져오는 데 실패했습니다',
         variant: 'destructive',
       });
     } finally {
@@ -81,8 +81,8 @@ export default function ReportCalendarPage() {
     >
       <div className="space-y-6">
         <PageHeader
-          title="日報カレンダー"
-          description="月間の日報をカレンダー形式で表示します"
+          title="일일 보고 캘린더"
+          description="월간 일일 보고를 캘린더 형식으로 표시합니다"
         />
 
         {isLoading ? (

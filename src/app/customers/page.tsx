@@ -36,8 +36,8 @@ export default function CustomersPage() {
     
     if (!isManager) {
       toast({
-        title: 'アクセス拒否',
-        description: 'この機能へのアクセス権限がありません',
+        title: '접근 거부',
+        description: '이 기능에 대한 접근 권한이 없습니다',
         variant: 'destructive',
       });
       window.location.href = '/dashboard';
@@ -58,8 +58,8 @@ export default function CustomersPage() {
       });
     } catch (error) {
       toast({
-        title: 'エラー',
-        description: '顧客情報の取得に失敗しました',
+        title: '오류',
+        description: '고객 정보를 가져오는 데 실패했습니다',
         variant: 'destructive',
       });
     }
@@ -69,15 +69,15 @@ export default function CustomersPage() {
     try {
       await createCustomer(formData);
       toast({
-        title: '成功',
-        description: '顧客情報を登録しました',
+        title: '성공',
+        description: '고객 정보를 등록했습니다',
       });
       setIsCreateDialogOpen(false);
       loadCustomers();
     } catch (error) {
       toast({
-        title: 'エラー',
-        description: '顧客情報の登録に失敗しました',
+        title: '오류',
+        description: '고객 정보 등록에 실패했습니다',
         variant: 'destructive',
       });
     }
@@ -85,20 +85,20 @@ export default function CustomersPage() {
 
   const handleUpdate = async (formData: any) => {
     if (!selectedCustomer) return;
-    
+
     try {
       await updateCustomer(selectedCustomer.id, formData);
       toast({
-        title: '成功',
-        description: '顧客情報を更新しました',
+        title: '성공',
+        description: '고객 정보를 업데이트했습니다',
       });
       setIsEditDialogOpen(false);
       setSelectedCustomer(null);
       loadCustomers();
     } catch (error) {
       toast({
-        title: 'エラー',
-        description: '顧客情報の更新に失敗しました',
+        title: '오류',
+        description: '고객 정보 업데이트에 실패했습니다',
         variant: 'destructive',
       });
     }
@@ -106,20 +106,20 @@ export default function CustomersPage() {
 
   const handleDelete = async () => {
     if (!selectedCustomer) return;
-    
+
     try {
       await deleteCustomer(selectedCustomer.id);
       toast({
-        title: '成功',
-        description: '顧客情報を削除しました',
+        title: '성공',
+        description: '고객 정보를 삭제했습니다',
       });
       setIsDeleteDialogOpen(false);
       setSelectedCustomer(null);
       loadCustomers();
     } catch (error) {
       toast({
-        title: 'エラー',
-        description: '顧客情報の削除に失敗しました',
+        title: '오류',
+        description: '고객 정보 삭제에 실패했습니다',
         variant: 'destructive',
       });
     }
@@ -138,16 +138,16 @@ export default function CustomersPage() {
   const handleExport = () => {
     // TODO: Implement export functionality
     toast({
-      title: 'エクスポート',
-      description: 'エクスポート機能は現在開発中です',
+      title: '내보내기',
+      description: '내보내기 기능은 현재 개발 중입니다',
     });
   };
 
   const handleImport = () => {
     // TODO: Implement import functionality
     toast({
-      title: 'インポート',
-      description: 'インポート機能は現在開発中です',
+      title: '가져오기',
+      description: '가져오기 기능은 현재 개발 중입니다',
     });
   };
 
@@ -160,7 +160,7 @@ export default function CustomersPage() {
       >
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-lg text-muted-foreground">
-            このページへのアクセス権限がありません
+            이 페이지에 대한 접근 권한이 없습니다
           </p>
         </div>
       </DashboardLayout>
@@ -175,8 +175,8 @@ export default function CustomersPage() {
     >
       <div className="space-y-6">
         <PageHeader
-          title="顧客マスタ管理"
-          description="顧客情報の管理を行います"
+          title="고객 마스터 관리"
+          description="고객 정보를 관리합니다"
         />
 
         {/* Actions Bar */}
@@ -185,7 +185,7 @@ export default function CustomersPage() {
           <div className="relative w-full sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="会社名・担当者名で検索"
+              placeholder="회사명/담당자명으로 검색"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9"
@@ -200,7 +200,7 @@ export default function CustomersPage() {
               onClick={handleImport}
             >
               <FileUp className="mr-2 h-4 w-4" />
-              インポート
+              가져오기
             </Button>
             <Button
               variant="outline"
@@ -208,14 +208,14 @@ export default function CustomersPage() {
               onClick={handleExport}
             >
               <FileDown className="mr-2 h-4 w-4" />
-              エクスポート
+              내보내기
             </Button>
             <Button
               onClick={() => setIsCreateDialogOpen(true)}
               size="sm"
             >
               <Plus className="mr-2 h-4 w-4" />
-              新規登録
+              신규 등록
             </Button>
           </div>
         </div>

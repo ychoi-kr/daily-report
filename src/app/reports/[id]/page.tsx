@@ -47,7 +47,7 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <p className="mt-2 text-sm text-muted-foreground">読み込み中...</p>
+            <p className="mt-2 text-sm text-muted-foreground">로딩 중...</p>
           </div>
         </div>
       }>

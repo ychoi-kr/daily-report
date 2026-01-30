@@ -15,19 +15,19 @@ export default function NewReportPage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [reportDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
-  // 認証チェック
+  // 인증 확인
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await fetch('/api/auth/me');
         if (!response.ok) {
           if (response.status === 401) {
-            setAuthError('ログインが必要です');
+            setAuthError('로그인이 필요합니다');
             setTimeout(() => {
               router.push('/login');
             }, 2000);
           } else {
-            setAuthError('認証エラーが発生しました');
+            setAuthError('인증 오류가 발생했습니다');
           }
           setIsAuthenticated(false);
         } else {
@@ -35,7 +35,7 @@ export default function NewReportPage() {
         }
       } catch (error) {
         console.error('Auth check failed:', error);
-        setAuthError('認証チェックに失敗しました');
+        setAuthError('인증 확인에 실패했습니다');
         setIsAuthenticated(false);
       }
     };
@@ -43,33 +43,33 @@ export default function NewReportPage() {
     checkAuth();
   }, [router]);
 
-  // 認証チェック中
+  // 인증 확인 중
   if (isAuthenticated === null) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">読み込み中...</p>
+            <p className="mt-4 text-muted-foreground">로딩 중...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // 認証エラー
+  // 인증 오류
   if (!isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <Alert variant="destructive">
             <AlertDescription>
-              {authError || 'このページにアクセスする権限がありません'}
+              {authError || '이 페이지에 접근할 권한이 없습니다'}
             </AlertDescription>
           </Alert>
           <div className="mt-4 text-center">
             <Link href="/login">
-              <Button variant="outline">ログインページへ</Button>
+              <Button variant="outline">로그인 페이지로</Button>
             </Link>
           </div>
         </div>
@@ -80,19 +80,19 @@ export default function NewReportPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        {/* ヘッダー */}
+        {/* 헤더 */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/reports">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                日報一覧へ戻る
+                보고 목록으로 돌아가기
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* 日報作成フォーム */}
+        {/* 일일 보고 작성 폼 */}
         <ReportForm
           reportDate={reportDate}
           onCancel={() => router.push('/reports')}

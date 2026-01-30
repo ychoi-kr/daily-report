@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import { ko } from 'date-fns/locale';
 import { Comment } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,7 +15,7 @@ export function CommentHistory({ comments, isLoading }: CommentHistoryProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">上長コメント</h3>
+        <h3 className="text-lg font-semibold">상사 코멘트</h3>
         <div className="space-y-3">
           {[1, 2].map((i) => (
             <Card key={i}>
@@ -42,15 +42,15 @@ export function CommentHistory({ comments, isLoading }: CommentHistoryProps) {
   if (!comments || comments.length === 0) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">上長コメント</h3>
-        <p className="text-muted-foreground">コメントはまだありません</p>
+        <h3 className="text-lg font-semibold">상사 코멘트</h3>
+        <p className="text-muted-foreground">코멘트가 아직 없습니다</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">上長コメント</h3>
+      <h3 className="text-lg font-semibold">상사 코멘트</h3>
       <div className="space-y-3">
         {comments.map((comment) => (
           <Card key={comment.id}>
@@ -64,11 +64,11 @@ export function CommentHistory({ comments, isLoading }: CommentHistoryProps) {
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
                     <span className="font-semibold text-sm">
-                      {comment.manager?.name || '管理者'}
+                      {comment.manager?.name || '관리자'}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {format(new Date(comment.created_at), 'yyyy/MM/dd HH:mm', {
-                        locale: ja,
+                        locale: ko,
                       })}
                     </span>
                   </div>

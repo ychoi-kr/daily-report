@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import { ko } from 'date-fns/locale';
 import { Report, Comment } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,14 +47,14 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 404) {
-          setError('日報が見つかりません');
+          setError('일일 보고를 찾을 수 없습니다');
         } else if (err.status === 403) {
-          setError('この日報を閲覧する権限がありません');
+          setError('이 일일 보고를 볼 권한이 없습니다');
         } else {
           setError(err.message);
         }
       } else {
-        setError('日報の取得に失敗しました');
+        setError('일일 보고를 가져오는 데 실패했습니다');
       }
     } finally {
       setIsLoading(false);
@@ -100,7 +100,7 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
         </Alert>
         <Button variant="outline" onClick={handleBack} className="mt-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          一覧に戻る
+          목록으로 돌아가기
         </Button>
       </div>
     );
@@ -135,16 +135,16 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">日報詳細</h1>
+          <h1 className="text-2xl font-bold">일일 보고 상세</h1>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleBack}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              戻る
+              돌아가기
             </Button>
             {isCreator && (
               <Button onClick={handleEdit}>
                 <Edit className="mr-2 h-4 w-4" />
-                編集
+                편집
               </Button>
             )}
           </div>
@@ -156,18 +156,18 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">日付:</span>
+                <span className="text-sm text-muted-foreground">날짜:</span>
                 <span className="font-semibold">
-                  {format(new Date(report.report_date), 'yyyy年MM月dd日(E)', {
-                    locale: ja,
+                  {format(new Date(report.report_date), 'yyyy년 MM월 dd일(E)', {
+                    locale: ko,
                   })}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">作成者:</span>
+                <span className="text-sm text-muted-foreground">작성자:</span>
                 <span className="font-semibold">
-                  {report.sales_person?.name || '不明'}
+                  {report.sales_person?.name || '알 수 없음'}
                 </span>
                 {report.sales_person?.department && (
                   <span className="text-sm text-muted-foreground">
@@ -187,7 +187,7 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5" />
-              本日の課題・相談（Problem）
+              오늘의 과제/상담 (Problem)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -200,7 +200,7 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              明日の計画（Plan）
+              내일 계획 (Plan)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -223,15 +223,15 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
           <CardContent className="pt-4">
             <div className="flex flex-col space-y-1 text-xs text-muted-foreground">
               <div>
-                作成日時:{' '}
+                작성일시:{' '}
                 {format(new Date(report.created_at), 'yyyy/MM/dd HH:mm:ss', {
-                  locale: ja,
+                  locale: ko,
                 })}
               </div>
               <div>
-                更新日時:{' '}
+                수정일시:{' '}
                 {format(new Date(report.updated_at), 'yyyy/MM/dd HH:mm:ss', {
-                  locale: ja,
+                  locale: ko,
                 })}
               </div>
             </div>

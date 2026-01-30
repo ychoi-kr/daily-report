@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import { ko } from 'date-fns/locale';
 import { DailyReportListItem } from '@/lib/schemas/report';
 import { MessageCircle, Edit, Eye, ChevronUp, ChevronDown } from 'lucide-react';
 
@@ -51,7 +51,7 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return format(date, 'M/d (E)', { locale: ja });
+      return format(date, 'M/d (E)', { locale: ko });
     } catch {
       return dateString;
     }
@@ -62,7 +62,7 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
       <div className="border rounded-lg p-8">
         <div className="flex items-center justify-center">
           <div className="animate-pulse text-muted-foreground">
-            データを読み込み中...
+            데이터 로딩 중...
           </div>
         </div>
       </div>
@@ -73,7 +73,7 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
     return (
       <div className="border rounded-lg p-8">
         <div className="text-center text-muted-foreground">
-          表示する日報がありません
+          표시할 일일 보고가 없습니다
         </div>
       </div>
     );
@@ -91,7 +91,7 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
                 onClick={handleSort}
                 className="h-auto p-0 font-semibold hover:bg-transparent"
               >
-                日付
+                날짜
                 {sortOrder === 'asc' ? (
                   <ChevronUp className="ml-1 h-4 w-4" />
                 ) : (
@@ -99,10 +99,10 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
                 )}
               </Button>
             </TableHead>
-            <TableHead>営業担当</TableHead>
-            <TableHead>訪問件数</TableHead>
-            <TableHead>コメント</TableHead>
-            <TableHead className="text-right">操作</TableHead>
+            <TableHead>영업 담당</TableHead>
+            <TableHead>방문 건수</TableHead>
+            <TableHead>코멘트</TableHead>
+            <TableHead className="text-right">작업</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -119,14 +119,14 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <span>{report.visit_count}</span>
-                    <span className="text-muted-foreground">件</span>
+                    <span className="text-muted-foreground">건</span>
                   </div>
                 </TableCell>
                 <TableCell>
                   {report.has_comments ? (
                     <Badge variant="secondary" className="gap-1">
                       <MessageCircle className="h-3 w-3" />
-                      あり
+                      있음
                     </Badge>
                   ) : (
                     <span className="text-muted-foreground">-</span>
@@ -141,7 +141,7 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
                       className="gap-1"
                     >
                       <Eye className="h-4 w-4" />
-                      詳細
+                      상세
                     </Button>
                     {canEdit && (
                       <Button
@@ -151,7 +151,7 @@ export const ReportListTable: React.FC<ReportListTableProps> = ({
                         className="gap-1"
                       >
                         <Edit className="h-4 w-4" />
-                        編集
+                        편집
                       </Button>
                     )}
                   </div>

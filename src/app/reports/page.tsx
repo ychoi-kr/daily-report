@@ -56,8 +56,8 @@ export default function ReportsPage() {
     } catch (error) {
       console.error('Failed to fetch sales persons:', error);
       toast({
-        title: 'エラー',
-        description: '営業担当者の一覧取得に失敗しました',
+        title: '오류',
+        description: '영업 담당자 목록을 가져오는 데 실패했습니다',
         variant: 'destructive',
       });
     }
@@ -92,8 +92,8 @@ export default function ReportsPage() {
     } catch (error) {
       console.error('Failed to fetch reports:', error);
       toast({
-        title: 'エラー',
-        description: '日報の取得に失敗しました',
+        title: '오류',
+        description: '일일 보고 목록을 가져오는 데 실패했습니다',
         variant: 'destructive',
       });
       setReports([]);
@@ -155,10 +155,10 @@ export default function ReportsPage() {
       <div className="space-y-6">
         {/* Header with New Report button */}
         <div className="flex items-center justify-between">
-          <PageHeader title="日報一覧" />
+          <PageHeader title="일일 보고 목록" />
           <Button onClick={handleNewReport} className="gap-2">
             <Plus className="h-4 w-4" />
-            新規日報作成
+            신규 보고 작성
           </Button>
         </div>
 
