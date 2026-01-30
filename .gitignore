@@ -19,3 +19,4 @@ issue-*
 /test-results/
 /playwright-report/
 /playwright/.cache/
+.serena/
